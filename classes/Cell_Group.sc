@@ -19,21 +19,11 @@ Cell_Group : Group {
 		gen = Cell_Gen(this, pipe.in, in1, in2, in3, in4);
 	}
 
-	/*
-	release {
-		Routine({
-			while({gen.isPlaying}, {0.25.wait});
-			pipe.free;
-		}).play;
-		^super.release;
-	}
-	*/
-
 	// suppression
 	free {
-		// il faut supprimer le générateur et la chaîne
-		//gen.free;
+		// il faut supprimer la chaîne
 		pipe.free;
+		// super.free se charge du générateur
 		^super.free;
 	}
 }

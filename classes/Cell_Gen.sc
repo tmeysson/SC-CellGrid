@@ -126,7 +126,7 @@ Cell_Gen : Synth {
 										// attaque: 1s, chute: 1s, entretien: 100%;
 										// continue jusqu'à ce que gate devienne 0
 										// arrête le groupe tout entier à la fin
-										EnvGen.kr(Env.asr(1, 1, 1, 'lin'), gate, doneAction: 14) *
+										EnvGen.kr(Env.asr(1, 1, 1, 'lin'), gate, doneAction: 2) *
 										fDelay.value(
 											// modulation en anneau
 											fAM.value(
@@ -167,14 +167,8 @@ Cell_Gen : Synth {
 			['out', out, 'freqMod', freqMod, 'ampMod', ampMod,
 				'delay', delay, 'forward', forward],
 			// on ajoute dans le groupe de la cellule
-			group);
+			group).onFree({group.free});
 	}
-
-	/*
-	init {
-		NodeWatcher.register(this);
-	}
-	*/
 
 	// on utilise également les méthodes free et release de Synth, sans les modifier
 }

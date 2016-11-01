@@ -70,9 +70,6 @@ Cell_Matrix {
 
 		// création du fil d'exécution
 		thread = Routine({
-			// liste des cellules à nettoyer
-			var oldCells = List(0);
-
 			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
 			if((Server.default.options.numAudioBusChannels < 2048) ||
 				(Server.default.options.memSize < (128 * 1024)) ||
@@ -161,26 +158,10 @@ Cell_Matrix {
 				// choisir une adresse au hasard (entier sur [0, gridSize-1])
 				x = gridSize.rand;
 				y = gridSize.rand;
-				// ajouter l'ancienne cellule dans la liste pour le nettoyage
-				oldCells.add([cells[x][y], 0]);
 				// arrêter la cellule (la méthode release permet de déclencher la chute)
 				cells[x][y].release;
 				// créer une nouvelle cellule
 				cells[x][y] = this.newCell(x, y);
-				// effectuer le nettoyage
-				//DEBUG oldCells.size.postln;
-				oldCells = oldCells.do({|item|
-					if(item[1] > 1,
-						{
-							freed.add(item);
-							item[0].pipe.free;
-							//DEBUG "oldCell.free".postln;
-						}, {
-							item[1] = item[1] + renewalTime
-						}
-					);
-				});
-				oldCells.removeAll(freed);
 				// boucle infinie
 			}.loop;
 			// lancer le processus principal
@@ -209,8 +190,6 @@ Cell_Matrix {
 			cells.do({|row| row.do({|item| item.release})});
 			// attendre l'arrêt
 			2.wait;
-			// supprimer les Bus restants
-			cells.do({|row| row.do({|item| item.pipe.free})});
 			// supprimer le groupe parallèle
 			cellParGroup.free;
 			// supprimer la sortie
