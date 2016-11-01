@@ -38,7 +38,7 @@ Cell_Gen : Synth {
 		2.do({|i|
 			// bruitage
 			var p1 = if(i>0, {weights[0]}, {1-weights[0]});
-			var f1 = if(i>0, {
+			var fNoise = if(i>0, {
 				{|body, freq|
 					// mélange de bruit: quantité sur [0,nseMax]
 					var noiseAmt = Rand(0.0, nseMax);
@@ -49,14 +49,14 @@ Cell_Gen : Synth {
 					((1 - noiseAmt) * body +
 						// mélange de bruit
 						(noiseAmt * LPF.ar(HPF.ar((
-							WhiteNoise.ar), noiseLow), noiseHigh).clip(-1,1)))}
+							WhiteNoise.ar), noiseLow), noiseHigh).clip(-1,1))) }
 				}, {
 					{|body, freq| body }
 			});
 			2.do({|j|
 				// mélange d'entrée auxiliaire
 				var p2 = if(j>0, {weights[1]}, {1-weights[1]});
-				var f2 = if(j>0, {
+				var fMix = if(j>0, {
 				{|body|
 						// quantité de mélange de l'entrée: sur [0,fwdMax]
 						var fwdAmt = Rand(0.0, fwdMax);
@@ -72,7 +72,7 @@ Cell_Gen : Synth {
 				2.do({|k|
 					// retard variable
 					var p3 = if(k>0, {weights[2]}, {1-weights[2]});
-					var f3 = if(k>0, {
+					var fDelay = if(k>0, {
 						{|body|
 							// quantité de retard: exponentielle sur [2**-14,2**(delMaxExp-14)]
 							var delAmt = (2**Rand(-14.0, delMaxExp - 14.0));
@@ -87,7 +87,7 @@ Cell_Gen : Synth {
 					2.do({|l|
 						// modulation de fréquence
 						var p4 = if(l>0, {weights[3]}, {1-weights[3]});
-						var f4 = if(l>0, {
+						var fFM = if(l>0, {
 							{|freq|
 								// quantité de modulation de fréquence: [0,fmOct]
 								var freqAmt = Rand(0.0, fmOct);
@@ -100,15 +100,15 @@ Cell_Gen : Synth {
 						2.do({|m|
 						// modulation d'amplitude
 							var p5 = if(m>0, {weights[4]}, {1-weights[4]});
-							var f5 = if(m>0, {
-								{
+							var fAM = if(m>0, {
+								{|body|
 									// quantité de modulation d'amplitude: [0,ampMax]
 									var ampAmt = Rand(0.0, ampMax);
 									// contrôle de modulation d'amplitude
 									var ampMod = 'ampMod'.ir;
-									(1 - ampAmt) + (InFeedback.ar(ampMod) * ampAmt) }
+									body * ((1 - ampAmt) + (InFeedback.ar(ampMod) * ampAmt)) }
 								}, {
-									{ 1 }
+									{|body| body }
 							});
 
 							// mes récurfrères, mes récurseurs, reprenez avec moi tous en choeur !
@@ -119,7 +119,7 @@ Cell_Gen : Synth {
 							// la définition résultante
 							defs[index] = SynthDef(("cellGen"+i+j+k+l+m).asSymbol,
 								{|out, gate = 1|
-									// fréquence de base de l'oscillateur
+									// fréquence de l'oscillateur (avec modulation)
 									var freq = 2 ** Rand(7.0, 11.0);
 									Out.ar(out,
 										// enveloppe dynamique:
@@ -127,16 +127,20 @@ Cell_Gen : Synth {
 										// continue jusqu'à ce que gate devienne 0
 										// arrête le groupe tout entier à la fin
 										EnvGen.kr(Env.asr(1, 1, 1, 'lin'), gate, doneAction: 14) *
-										f1.value(
-											f2.value(
-												f3.value(
-													// oscillateur sinusoïdal a modulation de fréquence
-													SinOsc.ar(
-														f4.value(freq), 0,
-														// modulation en anneau et clip sur [-1,1]
-														f5.value).clip(-1,1)
+										fDelay.value(
+											// modulation en anneau
+											fAM.value(
+												fNoise.value(
+													fMix.value(
+														// oscillateur sinusoïdal
+														SinOsc.ar(
+															// modulation de fréquence
+															fFM.value(freq)
+															// clip sur [-1,1]
+														).clip(-1,1)
+													), freq
 												)
-											), freq
+											)
 										)
 									);
 								}
