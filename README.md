@@ -8,6 +8,7 @@ The cells are composed of an oscillator with 4 inputs, taken from the neighbouri
 - Amplitude modulation (Ring modulation)
 - Variable delay
 - Auxiliary mix in
+
 There follows a chain of effects (each of which is activated according to a certain probability), in a predefined order.
 The output of each cell is then fed into the neighbouring cells through a feedback process.
 The output of the whole grid is routed to SC's output through the selected output module.
