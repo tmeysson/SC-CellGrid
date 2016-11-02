@@ -119,10 +119,10 @@ Cell_Pipe {
 
 	// supprimer la chaîne
 	free {
-		// libérer les Synth (effets, modulateurs) et les Bus
-		//mods.do({|item| item.free });
-		//chain.do({|item| item.free });
+		// libérer les Bus
 		busses.do({|item| item.free });
+		// les Synth (effets, modulateurs) sont pris en charge par Cell_Group.free
+		// en conséquence cette méthode ne devrait pas être appellée autrement
 		^super.free;
 	}
 }
