@@ -109,8 +109,7 @@ Cell_Matrix {
 				'flypan', { Cell_FlyPanOut.addDefs(
 					if(outParms[2].isSequenceableCollection, {outParms[2]}, {nil})
 				)},
-				// idem avec altitude et fin programmée
-				'end', { Cell_EndOut.addDefs(outParms[2]) },
+				'turtle', { Cell_TurtleOut.addDef }
 			);
 			// attendre la synchro après ajout des définitions
 			Server.default.sync;
@@ -138,7 +137,7 @@ Cell_Matrix {
 				'walk', {out = Cell_WalkOut(busses, volume, outParms[1])},
 				'fly', { out = Cell_FlyOut(busses, volume, outParms[1], outParms[2])},
 				'flypan', { out = Cell_FlyPanOut(busses, volume, outParms[1], outParms[2])},
-				'end', { out = Cell_EndOut(busses, volume, this, outParms[1], outParms[2])},
+				'turtle', { out = Cell_TurtleOut(busses, volume, outParms[1]) }
 			);
 
 			// créer un groupe parallèle pour les cellules
