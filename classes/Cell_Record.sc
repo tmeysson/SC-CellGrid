@@ -30,7 +30,8 @@ Cell_Record {
 			if(recordNode.isNil){
 				recordNode = Synth.tail(RootNode(Server.default), "server-record",
 						[\bufnum, recordBuf.bufnum,
-						\fadeIn, fadeIn, \fadeOut, fadeOut, \time, time]);
+						\fadeIn, fadeIn, \fadeOut, fadeOut, \time, time]
+				).onFree({this.stopRecording});
 				NodeWatcher.register(recordNode);
 				CmdPeriod.doOnce {
 					recordNode = nil;

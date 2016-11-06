@@ -14,6 +14,10 @@ Cell_Matrix {
 	var out;
 	// processus principal (en raison du mode synchrone)
 	var thread;
+	// processus de renouvellement des cellules
+	var renew;
+	// processus de terminaison
+	var end;
 	// taille de la grille (carré de gridSize*gridSize)
 	var gridSize;
 	// module d'enregistrement, et variable indiquant si l'enregistrement est activé
@@ -60,11 +64,14 @@ Cell_Matrix {
 	- path:    le chemin du fichier cible
 	*/
 	*new {|size = 2, volume = 0, renewalTime = 4,
-		outParms = #['sum'], genParms = nil, rec = nil|
-		^super.new.init(size, volume, renewalTime, outParms, genParms, rec);
+		outParms = #['sum'], genParms, pipeParms, modParms,
+		rec, stopAfter|
+		^super.new.init(size, volume, renewalTime,
+			outParms, genParms, pipeParms, modParms,
+			rec, stopAfter);
 	}
 
-	init {|size, volume, renewalTime, outParms, genParms, rec|
+	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter|
 		// initialisation de la taille de la grille
 		gridSize = size;
 
@@ -85,15 +92,9 @@ Cell_Matrix {
 			Server.default.bootSync;
 
 			// ajouter les définitions de modules (générateur, chaîne d'effets, modulateurs)
-			if(genParms.notNil, {
-				Cell_Gen.addDefs(genParms[0], genParms[1], genParms[2],
-					genParms[3], genParms[4], genParms[5]);
-				}, {
-					Cell_Gen.addDefs;
-				}
-			);
-			Cell_Pipe.addDefs;
-			Cell_Mod.addDefs;
+			Cell_Gen.addDefs(genParms);
+			Cell_Pipe.addDefs(pipeParms);
+			Cell_Mod.addDefs(modParms);
 			// suivant le type de sortie choisie, ajouter les définitions correspondantes
 			switch(outParms[0],
 				// somme des sorties
@@ -147,25 +148,36 @@ Cell_Matrix {
 				this.newCell(x, y);
 			});
 
-			// démarrer le renouvellement des cellules
-			{
-				// adresse de la cellule à renouveller
-				var x, y;
-				// liste des cellules supprimées
-				var freed = List();
-				// attendre la période demandée
-				renewalTime.wait;
-				// choisir une adresse au hasard (entier sur [0, gridSize-1])
-				x = gridSize.rand;
-				y = gridSize.rand;
-				// arrêter la cellule (la méthode release permet de déclencher la chute)
-				cells[x][y].release;
-				// créer une nouvelle cellule
-				cells[x][y] = this.newCell(x, y);
-				// boucle infinie
-			}.loop;
-			// lancer le processus principal
+			renew = Routine({
+				// démarrer le renouvellement des cellules
+				{
+					// adresse de la cellule à renouveller
+					var x, y;
+					// attendre la période demandée
+					renewalTime.wait;
+					// choisir une adresse au hasard (entier sur [0, gridSize-1])
+					x = gridSize.rand;
+					y = gridSize.rand;
+					// arrêter la cellule (la méthode release permet de déclencher la chute)
+					cells[x][y].release;
+					// créer une nouvelle cellule
+					cells[x][y] = this.newCell(x, y);
+					// boucle infinie
+				}.loop;
+				// lancer le processus principal
+			}).play;
+
+			if(stopAfter.notNil,
+				{
+					end = Routine({
+						stopAfter.wait;
+						if(isRec, {4.wait});
+						this.free;
+					}).play;
+				}
+			);
 		}).play;
+
 	}
 
 	// créer une cellule à l'adresse indiquée
@@ -183,8 +195,9 @@ Cell_Matrix {
 
 	// arrêt de la grille
 	free {
-		// arrêt du renouvellement
-		thread.stop;
+		// arrêt du renouvellement et de la terminaison
+		renew.stop;
+
 		Routine({
 			// arrêter les cellules (en déclenchant la chute)
 			cells.do({|row| row.do({|item| item.release})});
@@ -198,7 +211,10 @@ Cell_Matrix {
 			busses.do({|row| row.do({|item| item.free})});
 			// si l'enregistrement est actif, l'arrêter
 			if (isRec, { recorder.free });
+			// si la terminaison n'est pas encore atteinte, la supprimer
+			if(end.notNil, {end.stop});
 		}).play;
+
 		^super.free;
 	}
 }

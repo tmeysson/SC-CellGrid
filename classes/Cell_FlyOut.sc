@@ -53,7 +53,7 @@ Cell_FlyOut {
 
 		xBus = Bus.control;
 		yBus = Bus.control;
-		zBus = Bus.control;
+		zBus = Bus.control.setSynchronous(1);
 
 		synths = busses.collect({|row, x|
 			row.collect({|item, y|

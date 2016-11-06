@@ -11,20 +11,39 @@ Cell_Pipe {
 	var <in;
 
 	// définir les synthétiseurs qui correspondent aux différents effets
-	*addDefs {|expected = 2|
+	*addDefs {|pipeParms|
+		var expected,
+		delFixMax, delAmtMax,
+		pitchAmt,
+		ampModFreqInt,
+		distFact,
+		revRoomInt, revDampInt;
+
+		if(pipeParms.isNil, {pipeParms = Cell_Parms.pipe});
+		expected = pipeParms[0];
+		delFixMax = pipeParms[1];
+		delAmtMax = pipeParms[2];
+		pitchAmt = pipeParms[3];
+		ampModFreqInt = pipeParms[4];
+		distFact = pipeParms[5];
+		revRoomInt = pipeParms[6];
+		revDampInt = pipeParms[7];
+
 		defs = [
 			// out et in sont les Bus de sortie et d'entrée, mod est celui du modulateur
 			// retard
 			SynthDef('pipeDelay', {|out, in, mod|
-				var fixed = Rand(0.0,3.0);
-				var amt = Rand(0.0,1.0);
+				// retard fixe
+				var fixed = Rand(0.0, delFixMax);
+				// retard variable
+				var amt = Rand(0.0, delAmtMax);
 				Out.ar(out, DelayL.ar(In.ar(in), fixed + amt, fixed + (In.kr(mod) * amt)));
 			}),
 			// pitch shift
 			SynthDef('pipePitch', {|out, in, mod|
 				Out.ar(out, PitchShift.ar(In.ar(in), 0.05,
-					// ratio sur [0.25, 4]
-					2 ** ((In.kr(mod) * 4) - 2), 0, 0.0005).clip(-1,1));
+					// ratio sur 2**([-2, 2] * pitchAmt)
+					2 ** ((In.kr(mod) -0.5) * 4 * pitchAmt), 0, 0.0005).clip(-1,1));
 			}),
 			// pitch shift quantifié
 			SynthDef('pipeStairPitch', {|out, in, mod|
@@ -41,21 +60,23 @@ Cell_Pipe {
 			}),
 			// modulation d'amplitude
 			SynthDef('pipeAmp', {|out, in, mod|
-				// la fréquence de modulation varie exponentiellement sur [1, 64]
-				var freq = 2 ** Rand(0.0, 6.0);
+				// la fréquence de modulation varie exponentiellement sur 2**ampModFreqInt(Array)
+				var freq = 2 ** Rand(ampModFreqInt[0], ampModFreqInt[1]);
 				Out.ar(out, (In.ar(in) *
 					(1 + (SinOsc.kr(freq).range(-1,0) * In.kr(mod)))).clip(-1,1));
 			}),
 			// distorsion
 			SynthDef('pipeDist', {|out, in, mod|
-				// on élève le signal à une puissance sur [0.25, 1]
-				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod).neg * 2))).clip(-1,1));
+				// on élève le signal à une puissance sur [2**(-distFact), 1]
+				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod).neg * distFact))).clip(-1,1));
 			}),
 			// reverb
 			SynthDef('pipeRev', {|out, in, mod|
 				Out.ar(out, FreeVerb.ar(In.ar(in), In.kr(mod),
-					// taille de la pièce et amortissement des aigüs
-					Rand(0.25,0.75), Rand(0.25,0.75)).clip(-1,1));
+					// taille de la pièce
+					Rand(revRoomInt[0],revRoomInt[1]),
+					// amortissement des aigüs
+					Rand(revDampInt[0],revDampInt[1])).clip(-1,1));
 			})
 			// il faut inverser l'ordre car les effets sont ajoutés du dernier au premier
 		].reverse;

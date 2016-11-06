@@ -1,23 +1,36 @@
 /*
-Cell_Gen est le générateur cellulaire de Cell Grid
+Cell_Gen est le générateur cellulaire de Cell Grid.
 Il s'agit d'un oscillateur à quatre entrées:
 - modulation FM
 - modulation RingMod
 - modulation par retard variable
 - une quatrième entrée mélangée telle quelle
-Les quantités de modulation sont aléatoires (ou nulles suivant une probabilité définie)
-Le résultat est envoyé sur le Bus demandé (entrée d'une chaîne d'effets)
+Un bruitage est ajouté.
+Les quantités de modulation sont aléatoires (ou nulles suivant une probabilité définie).
+Le résultat est envoyé sur le Bus demandé (entrée d'une chaîne d'effets).
 L'arrêt (après fade out) est déclenché par le paramètre gate,
-et déclenche l'arrêt du groupe tout entier
+et déclenche l'arrêt du groupe tout entier (par l'intermédiaire de Synth.onFree).
 */
 Cell_Gen : Synth {
 	// la définition du synthétiseur
 	classvar defs, defWeights;
 
 	// ajouter la définition du synthétiseur
-	*addDefs {|weights = #[0.5, 0.5, 0.5, 0.5, 0.5], nseParms = #[1.0, -3.0, 3.0],
-		fwdMax = 1.0, delMaxExp = 8.0, fmOct = 1.0, ampMax = 1.0|
-		var nseMax = nseParms[0], nseLowOct = nseParms[1], nseHighOct = nseParms[2];
+	*addDefs {|genParms|
+		var weights, nseParms, nseMax, nseLowOct, nseHighOct,
+		fwdMax, delMaxExp, fmOct, ampMax;
+
+		if(genParms.isNil, {genParms = Cell_Parms.gen()});
+
+		weights = genParms[0];
+		nseParms = genParms[1];
+		nseMax = nseParms[0];
+		nseLowOct = nseParms[1];
+		nseHighOct = nseParms[2];
+		fwdMax = genParms[2];
+		delMaxExp = genParms[3];
+		fmOct = genParms[4];
+		ampMax = genParms[5];
 
 		defs = Array.newClear(32);
 		defWeights = Array.newClear(32);
