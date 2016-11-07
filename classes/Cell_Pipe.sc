@@ -22,7 +22,7 @@ Cell_Pipe {
 		if(pipeParms.isNil, {pipeParms = Cell_Parms.pipe});
 		expected = pipeParms[0];
 		delFixMax = pipeParms[1];
-		delAmtMax = pipeParms[2];
+		delAmtMax = log2(pipeParms[2] * 1024);
 		pitchAmt = pipeParms[3];
 		ampModFreqInt = pipeParms[4];
 		distFact = pipeParms[5];
@@ -36,31 +36,31 @@ Cell_Pipe {
 				// retard fixe
 				var fixed = Rand(0.0, delFixMax);
 				// retard variable
-				var amt = Rand(0.0, delAmtMax);
+				var amt = 2**Rand(-10.0, delAmtMax - 10.0);
 				Out.ar(out, DelayL.ar(In.ar(in), fixed + amt, fixed + (In.kr(mod) * amt)));
 			}),
 			// pitch shift
 			SynthDef('pipePitch', {|out, in, mod|
 				Out.ar(out, PitchShift.ar(In.ar(in), 0.05,
 					// ratio sur 2**([-2, 2] * pitchAmt)
-					2 ** ((In.kr(mod) -0.5) * 4 * pitchAmt), 0, 0.0005).clip(-1,1));
+					2 ** ((In.kr(mod) - 0.5) * 4 * pitchAmt), 0, 0.0005).clip(-1,1));
 			}),
 			// pitch shift quantifié
 			SynthDef('pipeStairPitch', {|out, in, mod|
 				// quantification sur  {0,..,4}
-				var quant = (In.kr(mod) * 5).floor;
+				var quant = (In.kr(mod) * 4.999).floor;
 				// octave sur {-1,..,1} suivant les multiples de 2
-				var oct = (quant/2).floor - 1;
+				var oct = quant.div(2) - 1;
 				// quinte naturelle suivant le reste impair
 				var fifth = quant % 2;
 				// le ratio est la valeur d'octave sur {0.5, 1, 2}
 				// multiplié par la valeur de quinte sur {1, 1.5}
-				var ratio = (2**oct) * (1.5**fifth);
+				var ratio = (2**oct) * (1 + (0.5 * fifth));
 				Out.ar(out, PitchShift.ar(In.ar(in), 0.05, ratio, 0, 0.0005).clip(-1,1));
 			}),
 			// modulation d'amplitude
 			SynthDef('pipeAmp', {|out, in, mod|
-				// la fréquence de modulation varie exponentiellement sur 2**ampModFreqInt(Array)
+				// la fréquence de modulation varie exponentiellement sur 2**ampModFreqInt[]
 				var freq = 2 ** Rand(ampModFreqInt[0], ampModFreqInt[1]);
 				Out.ar(out, (In.ar(in) *
 					(1 + (SinOsc.kr(freq).range(-1,0) * In.kr(mod)))).clip(-1,1));
@@ -68,7 +68,7 @@ Cell_Pipe {
 			// distorsion
 			SynthDef('pipeDist', {|out, in, mod|
 				// on élève le signal à une puissance sur [2**(-distFact), 1]
-				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod).neg * distFact))).clip(-1,1));
+				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod) * distFact).neg)).clip(-1,1));
 			}),
 			// reverb
 			SynthDef('pipeRev', {|out, in, mod|

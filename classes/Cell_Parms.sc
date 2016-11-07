@@ -49,6 +49,14 @@ Cell_Parms : Array {
 		^super.with('flypan', speed, [levels, times]);
 	}
 
+	*outFlyTurtle{|linSpeed, angSpeed, zSpeed|
+		^super.with('flyturtle', linSpeed, angSpeed, zSpeed);
+	}
+
+	*outFlyTurtleCycle{|linSpeed, angSpeed, levels, times|
+		^super.with('flyturtle', linSpeed, angSpeed, [levels, times]);
+	}
+
 	*outTurtle{|speed = 0.25|
 		^super.with('turtle', speed);
 	}

@@ -109,6 +109,10 @@ Cell_Matrix {
 				'flypan', { Cell_FlyPanOut.addDefs(
 					if(outParms[2].isSequenceableCollection, {outParms[2]}, {nil})
 				)},
+				// idem avec tortue (progression en coord polaires)
+				'flyturtle', { Cell_FlyTurtleOut.addDefs(
+					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil})
+				)},
 				'turtle', { Cell_TurtleOut.addDef }
 			);
 			// attendre la synchro après ajout des définitions
@@ -137,6 +141,8 @@ Cell_Matrix {
 				'walk', {out = Cell_WalkOut(busses, volume, outParms[1])},
 				'fly', { out = Cell_FlyOut(busses, volume, outParms[1], outParms[2])},
 				'flypan', { out = Cell_FlyPanOut(busses, volume, outParms[1], outParms[2])},
+				'flyturtle', { out = Cell_FlyTurtleOut(busses, volume,
+					outParms[1], outParms[2], outParms[3])},
 				'turtle', { out = Cell_TurtleOut(busses, volume, outParms[1]) }
 			);
 

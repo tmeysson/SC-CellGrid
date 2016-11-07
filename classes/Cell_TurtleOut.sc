@@ -67,14 +67,16 @@ Cell_TurtleOut {
 			})
 		);
 
-		("["+xPos+","+yPos+"] "+["N","E","S","W"][angle]).postln;
+		//("["+xPos+","+yPos+"] "+["N","E","S","W"][angle]).postln;
 
 		if(change == 0,
 			{
 				xPos = (xPos + sin(angle*0.5pi).round) % xSize;
 				yPos = (yPos + cos(angle*0.5pi).round) % ySize;
+				"FORWARDS".postln;
 			}, {
 				angle = (angle + change) % 4;
+				if(change == 1, {"RIGHT".postln}, {"LEFT".postln});
 			}
 		);
 
