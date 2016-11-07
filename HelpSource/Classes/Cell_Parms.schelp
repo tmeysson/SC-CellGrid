@@ -1,0 +1,255 @@
+TITLE:: Cell_Parms
+summary:: Generateur de paramètres pour les classes de Cell Grid
+categories:: Extensions>Cell Grid
+related:: Classes/Cell_Matrix, Classes/Cell_Gen, Classes/Cell_Pipe, Classes/Cell_Mod
+
+DESCRIPTION::
+Les paramètres de Cell Grid sont donnés sous la forme de tableaux à plusieurs niveaux.
+Cell_Parms possède diverses méthodes de classe pour générer ces tableaux, ce qui permet à l'utilisateur d'avoir accès à la documentation des nombreux paramètres.
+
+CLASSMETHODS::
+
+METHOD:: gen
+Paramètres pour Cell_Gen (le générateur cellulaire).
+
+ARGUMENT:: weights
+Tableau donnant les probabilités de présence des différentes fonctionnalités de Cell_Gen
+(bruitage, mélange auxiliaire, retard variable, modulation de fréquence, modulation en anneau).
+
+ARGUMENT:: nseMax
+Quantité maximale de bruit, sur [0,1].
+
+ARGUMENT:: nseLowOct
+Octave minimale du bruit, par rapport à la fréquence de base. Nombre négatif.
+
+ARGUMENT:: nseHighOct
+Octave maximale du bruit, par rapport à la fréquence de base.
+
+ARGUMENT:: fwdMax
+Quantité maximale de mélange d'entrée auxiliaire, sur [0,1].
+
+ARGUMENT:: delMaxExp
+Retard maximal, exprimé de façon exponentielle à partir de 2**(-14).
+C'est à dire, le retard variable sera compris entre 0 et une valeur aléatoire
+sur [2**(-14), 2**(delMaxExp - 14)].
+
+ARGUMENT:: fmOct
+Nombre d'octaves (vers le haut ou le bas) maximal de la modulation de fréquence.
+
+ARGUMENT:: ampMax
+Quantité maximale de modulation d'amplitude, sur [0,1].
+
+returns:: Un Array au format attendu par Cell_Gen.
+
+METHOD:: pipe
+Paramètres pour Cell_Pipe (la chaîne d'effets).
+
+ARGUMENT:: expected
+Espérance mathématique du nombre d'effets.
+Si ce nombre est trop elevé, un phénomène de limitation se produit
+et l'espérance du nombre d'effets est en réalité inférieure.
+
+ARGUMENT:: delFixMax
+Temps maximum de retard fixe. 
+
+ARGUMENT:: delAmtMax
+Temps maximum de retard variable, au minimum 2**(-10).
+L'intervalle de retard variable est généré par un calcul exponentiel
+sur [2**(-10), delAmtMax].
+
+ARGUMENT:: pitchAmt
+Quantité maximale de pitch shift, sur [0,1].
+Une valeur de 1 correspond à deux octaves de modulation,
+vers le haut et vers le bas.
+
+ARGUMENT:: ampModFreqInt
+Intervalle de fréquence du LFO du modulateur d'amplitude, donné exponentiellement.
+C'est à dire, le LFO aura une fréquence comprise sur 2**[ampModFreqInt]
+
+ARGUMENT:: distFact
+Facteur maximal de distorsion.
+La distorsion élève le signal à une puissance maximale de 2**(-distFact).
+
+ARGUMENT:: revRoomInt
+Intervalle de taille de chambre de la reverberation.
+Doit être inclus dans [0,1].
+
+ARGUMENT:: revDampInt
+Intervalle d'amortissement des aigüs de la reverberation.
+Doit être inclus dans [0,1].
+
+returns:: Un Array formaté pour Cell_Pipe
+
+METHOD:: mod
+Paramètres pour Cell_Mod.
+
+ARGUMENT:: freqMin
+La fréquence minimale pour les modulateurs, donnée exponentiellement
+(c'est à dire que la fréquence minimale est 2**freqMin).
+
+ARGUMENT:: freqMax
+La fréquence maximale pour les modulateurs, donnée exponentiellement
+(c'est à dire que la fréquence maximale est 2**freqMax).
+
+returns:: Un Array formaté pour Cell_Mod.
+
+METHOD:: rec
+Paramètres pour Cell_Record.
+
+ARGUMENT:: fadeIn
+Durée du fondu en entrée.
+
+ARGUMENT:: fadeOut
+Durée du fondu en sortie.
+
+ARGUMENT:: totalTime
+Durée de la partie non-nulle de l'enregistrement
+(Cell_Record ajoute 4 secondes de blanc au début et à la fin).
+
+ARGUMENT:: path
+Chemin complet du fichier produit. Si nil, alors un nom unique est généré
+(en fonction de la date et l'heure) et le fichier est crée dans le répertoire
+d'enregistrements par défaut.
+
+returns:: Un Array au format attendu par Cell_Record.
+
+METHOD:: outSum
+Paramètres pour la sortie de base, Cell_SumOut.
+Cette sortie fait simplement la somme des cellules.
+
+returns:: Un Array formaté pour Cell_Matrix.
+
+METHOD:: outWalk
+Paramètres pour la sortie Cell_WalkOut.
+Cette sortie se déplace horizontalement suivant des courbes aléatoires,
+il n'y a pas de notion d'altitude.
+La sortie est en mono.
+
+ARGUMENT:: speed
+Vitesse maximale de progression horizontale, en cellules/seconde.
+Les deux dimensions sont traitées indépendamment.
+
+returns:: Un Array formaté pour Cell_WalkOut.
+
+METHOD:: outFly
+Paramètres pour la sortie Cell_FlyOut.
+Cette sortie se déplace horizontalement suivant des courbes aléatoires,
+et verticalement selon une courbe aléatoire.
+La sortie est en mono.
+
+ARGUMENT:: speed
+Vitesse maximale de progression horizontale, en cellules/seconde.
+Les deux dimensions sont traitées indépendamment.
+
+ARGUMENT:: zSpeed
+Vitesse maximale de progression verticale, en niveaux/seconde.
+Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
+(la vitesse de progression dépend donc de l'altitude courante).
+
+returns:: Un Array formaté pour Cell_FlyOut.
+
+METHOD:: outFlyCycle
+Paramètres pour la sortie Cell_FlyOut.
+Cette sortie se déplace horizontalement suivant des courbes aléatoires,
+et verticalement selon une courbe cyclique programmée.
+La sortie est en mono.
+
+ARGUMENT:: speed
+Vitesse maximale de progression horizontale, en cellules/seconde.
+Les deux dimensions sont traitées indépendamment.
+
+ARGUMENT:: levels
+Un Array qui donne les différents niveaux d'altitude du cycle, sur [1, taille/2 + 0.5].
+
+ARGUMENT:: times
+Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
+Si ce tableau est plus court que levels, il sera prolongé par enroulement.
+
+returns:: Un Array formaté pour Cell_FlyOut.
+
+METHOD:: outFlyPan
+Paramètres pour la sortie Cell_FlyPanOut.
+Cette sortie se déplace horizontalement suivant des courbes aléatoires,
+et verticalement selon une courbe aléatoire.
+Elle effectue un pan suivant des courbes aléatoires, pour chaque cellule.
+
+ARGUMENT:: speed
+Vitesse maximale de progression horizontale, en cellules/seconde.
+Les deux dimensions sont traitées indépendamment.
+
+ARGUMENT:: zSpeed
+Vitesse maximale de progression verticale, en niveaux/seconde.
+Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
+(la vitesse de progression dépend donc de l'altitude courante).
+
+returns:: Un Array formaté pour Cell_FlyPanOut.
+
+METHOD:: outFlyPanCycle
+Paramètres pour la sortie Cell_FlyPanOut.
+Cette sortie se déplace horizontalement suivant des courbes aléatoires,
+et verticalement selon un cycle programmé.
+Elle effectue un pan suivant des courbes aléatoires, pour chaque cellule.
+
+ARGUMENT:: speed
+Vitesse maximale de progression horizontale, en cellules/seconde.
+Les deux dimensions sont traitées indépendamment.
+
+ARGUMENT:: levels
+Un Array qui donne les différents niveaux d'altitude du cycle, sur [1, taille/2 + 0.5].
+
+ARGUMENT:: times
+Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
+Si ce tableau est plus court que levels, il sera prolongé par enroulement.
+
+returns:: Un Array formaté pour Cell_FlyPanOut.
+
+METHOD:: outFlyTurtle
+Paramètres pour la sortie Cell_FlyTurtleOut.
+Cette sortie se déplace horizontalement suivant un schéma polaire,
+et verticalement selon une courbe aléatoire.
+Le pan est fonction de la position et de l'angle.
+
+ARGUMENT:: linSpeed
+Vitesse maximale de progression longitudinale,
+en cellules/seconde.
+
+ARGUMENT:: angSpeed
+Vitesse angulaire maximale, en tours/seconde.
+
+ARGUMENT:: zSpeed
+Vitesse maximale de progression verticale, en niveaux/seconde.
+Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
+(la vitesse de progression dépend donc de l'altitude courante).
+
+returns:: Un Array formaté pour Cell_FlyTurtleOut.
+
+METHOD:: outFlyTurtleCycle
+Paramètres pour la sortie Cell_FlyTurtleOut.
+Cette sortie se déplace horizontalement suivant un schéma polaire,
+et verticalement selon un cycle programmé.
+Le pan est fonction de la position et de l'angle.
+
+ARGUMENT:: linSpeed
+Vitesse maximale de progression longitudinale,
+en cellules/seconde.
+
+ARGUMENT:: angSpeed
+Vitesse angulaire maximale, en tours/seconde.
+
+ARGUMENT:: levels
+Un Array qui donne les différents niveaux d'altitude du cycle, sur [1, taille/2 + 0.5].
+
+ARGUMENT:: times
+Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
+Si ce tableau est plus court que levels, il sera prolongé par enroulement.
+
+returns:: Un Array formaté pour Cell_FlyTurtleOut.
+
+INSTANCEMETHODS::
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
