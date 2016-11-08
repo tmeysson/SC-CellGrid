@@ -15,6 +15,9 @@ Cell_Gen : Synth {
 	// la définition du synthétiseur
 	classvar defs, defWeights;
 
+	// le mode de l'instance
+	var <mode;
+
 	// ajouter la définition du synthétiseur
 	*addDefs {|genParms|
 		var weights, nseParms, nseMax, nseLowOct, nseHighOct,
@@ -174,13 +177,19 @@ Cell_Gen : Synth {
 	freqMod, ampMod, delay, forward: paramètres du synthétiseur 'cellGen'
 	*/
 	*new {|group, out, freqMod, ampMod, delay, forward|
-		^super.new(defs[defWeights.windex].name,
+		var modeNum = defWeights.windex;
+		^super.new(defs[modeNum].name,
 			// 'out' est l'entrée de la chaîne d'effets
 			// les autres paramètres sont les Bus de sortie des cellules voisines
 			['out', out, 'freqMod', freqMod, 'ampMod', ampMod,
 				'delay', delay, 'forward', forward],
 			// on ajoute dans le groupe de la cellule
-			group).onFree({group.free});
+			group).onFree({group.free}).init(modeNum);
+	}
+
+	init {|modeNum|
+		mode = modeNum;
+		^this;
 	}
 
 	// on utilise également les méthodes free et release de Synth, sans les modifier

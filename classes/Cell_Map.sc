@@ -18,7 +18,7 @@ Cell_Map : QWindow {
 		xPos = 0;
 		yPos = 0;
 		zPos = 1;
-		phi = 0.5pi;
+		phi = 0;
 
 		this.background = Color.black;
 
@@ -45,22 +45,22 @@ Cell_Map : QWindow {
 				yMapSize = yRange.size;
 
 				xRange.do({|cellX, mapX|
-					yRange.do({|cellY, y|
+					yRange.do({|cellY, mapY|
 						var cell = map[cellX%xSize][cellY%xSize];
 						var red, green, blue;
-						var mapY = yMapSize - 1 - y;
+						// var mapY = yMapSize - 1 - y;
 
-						Pen.color = Color.grey;
+						Pen.color = Color.gray;
 						if((cell[0] & 1) != 0,
 							{
 								var dir = cell[1][1];
 								var dx = dir.fold2(1);
-								var dy = (dir-1).fold2(1);
+								var dy = (dir+1).fold2(1);
 								var start = (mapX+0.5+(0.25*dx))@(mapY+0.5+(0.25*dy));
 								var end = (mapX+0.5+(0.75*dx))@(mapY+0.5+(0.75*dy));
 								Pen.line(start, end);
 								Pen.stroke;
-								Pen.addWedge(start, 0.1, ((dir-1.25)%4) * 0.5pi, 0.25pi);
+								Pen.addWedge(start, 0.1, ((0.75-dir)%4) * 0.5pi, 0.25pi);
 								Pen.fill;
 								red = 0.75;
 							},
@@ -69,12 +69,12 @@ Cell_Map : QWindow {
 							{
 								var dir = cell[1][2];
 								var dx = dir.fold2(1);
-								var dy = (dir-1).fold2(1);
+								var dy = (dir+1).fold2(1);
 								var start = (mapX+0.5+(0.25*dx))@(mapY+0.5+(0.25*dy));
 								var end = (mapX+0.5+(0.75*dx))@(mapY+0.5+(0.75*dy));
 								Pen.line(start, end);
 								Pen.stroke;
-								Pen.addWedge(start, 0.1, ((dir-1.25)%4) * 0.5pi, 0.25pi);
+								Pen.addWedge(start, 0.1, ((0.75-dir)%4) * 0.5pi, 0.25pi);
 								Pen.fill;
 								green = 0.75
 							},
@@ -83,12 +83,12 @@ Cell_Map : QWindow {
 							{
 								var dir = cell[1][0];
 								var dx = dir.fold2(1);
-								var dy = (dir-1).fold2(1);
+								var dy = (dir+1).fold2(1);
 								var start = (mapX+0.5+(0.25*dx))@(mapY+0.5+(0.25*dy));
 								var end = (mapX+0.5+(0.75*dx))@(mapY+0.5+(0.75*dy));
 								Pen.line(start, end);
 								Pen.stroke;
-								Pen.addWedge(start, 0.1, ((dir-1.25)%4) * 0.5pi, 0.25pi);
+								Pen.addWedge(start, 0.1, ((0.75-dir)%4) * 0.5pi, 0.25pi);
 								Pen.fill;
 								blue = 0.75
 							},
@@ -110,18 +110,18 @@ Cell_Map : QWindow {
 						if((cell[0] & 8) != 0, {
 							var dir = cell[1][3];
 							var dx = dir.fold2(1);
-							var dy = (dir-1).fold2(1);
-							var start = (mapX+0.5+(0.25*dx))@(mapY+0.5+(0.25*dy));
+							var dy = (dir+1).fold2(1);
+							var start = (mapX+0.5+(0.20*dx))@(mapY+0.5+(0.20*dy));
 							var end = (mapX+0.5+(0.75*dx))@(mapY+0.5+(0.75*dy));
 
 							Pen.strokeOval(Rect(mapX + 0.3,
 								mapY + 0.3,
 								0.4, 0.4));
 
-							Pen.color = Color.grey;
+							Pen.color = Color.gray;
 							Pen.line(start, end);
 							Pen.stroke;
-							Pen.addWedge(start, 0.1, ((dir-1.25)%4) * 0.5pi, 0.25pi);
+							Pen.addWedge(start, 0.1, ((0.75-dir)%4) * 0.5pi, 0.25pi);
 							Pen.fill;
 						});
 					});
@@ -129,18 +129,19 @@ Cell_Map : QWindow {
 			});
 
 			Pen.color = Color.white;
-			Pen.addWedge((zPos+(0.125*cos(phi)))@(zPos+(0.125*sin(phi).neg)),
-				0.25, (0.9pi-phi)%2pi, 0.2pi);
+			Pen.addWedge((zPos+(0.125*cos(phi)))@(zPos+(0.125*sin(phi))),
+				0.25, (phi-1.1pi)%2pi, 0.2pi);
 			Pen.fill;
 		};
 
 		this.front;
+		^this;
 	}
 
-	setPos {|x, y, z, p|
-		xPos = x;
-		yPos = y;
-		zPos = z;
-		phi = p;
+	setPos {|pos|
+		xPos = pos[0];
+		yPos = pos[1];
+		zPos = pos[2];
+		phi = pos[3];
 	}
 }

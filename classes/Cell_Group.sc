@@ -3,7 +3,7 @@ Classe minimaliste qui encapsule un générateur et une chaîne d'effets
 */
 Cell_Group : Group {
 	// le générateur
-	var gen;
+	var <gen;
 	// la chaîne d'effets
 	var <pipe;
 

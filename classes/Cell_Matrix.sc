@@ -22,6 +22,8 @@ Cell_Matrix {
 	var gridSize;
 	// module d'enregistrement, et variable indiquant si l'enregistrement est activé
 	var recorder, isRec;
+	// module de visualisation
+	var view, viewMap, viewRefresh;
 
 	/*
 	Constructeur: (les paramètres par défaut sont excessivement raisonnables)
@@ -113,7 +115,11 @@ Cell_Matrix {
 				'flyturtle', { Cell_FlyTurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil})
 				)},
-				'turtle', { Cell_TurtleOut.addDef }
+				// idem avec représentation graphique
+				'mapview', { Cell_MapOut.addDefs(
+					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
+					viewMap = Array.fill2D(gridSize, gridSize, { nil });
+				}
 			);
 			// attendre la synchro après ajout des définitions
 			Server.default.sync;
@@ -143,7 +149,8 @@ Cell_Matrix {
 				'flypan', { out = Cell_FlyPanOut(busses, volume, outParms[1], outParms[2])},
 				'flyturtle', { out = Cell_FlyTurtleOut(busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'turtle', { out = Cell_TurtleOut(busses, volume, outParms[1]) }
+				'mapview', { out = Cell_MapOut(busses, volume,
+					outParms[1], outParms[2], outParms[3])}
 			);
 
 			// créer un groupe parallèle pour les cellules
@@ -172,6 +179,18 @@ Cell_Matrix {
 				// lancer le processus principal
 			}).play;
 
+			// si requis, créer la vue
+			if(viewMap.notNil, {
+				{view = Cell_Map(viewMap)}.defer;
+				viewRefresh = Routine({
+					{
+						0.1.wait;
+						{view.refresh}.defer;
+						out.posBus.getn(4, {|pos| view.setPos(pos)});
+					}.loop;
+				}).play;
+			});
+
 			if(stopAfter.notNil,
 				{
 					end = Routine({
@@ -187,15 +206,26 @@ Cell_Matrix {
 
 	// créer une cellule à l'adresse indiquée
 	newCell {|x, y|
-		// Bus d'entrée: les sorties des cellules voisines, en ordre aléatoire
+		// Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
 		var inBusses = [
-			busses[(x+1)%gridSize][y],
 			busses[x][(y+1)%gridSize],
-			busses[(x-1)%gridSize][y],
-			busses[x][(y-1)%gridSize]
-		].scramble;
-		// on appelle simplement le générateur de cellules, avec l'adresse et les Bus d'entrée
-		^Cell_Group(cellParGroup, busses[x][y], inBusses[0], inBusses[1], inBusses[2], inBusses[3]);
+			busses[(x+1)%gridSize][y],
+			busses[x][(y-1)%gridSize],
+			busses[(x-1)%gridSize][y]
+		];
+		// ordre aléatoire des directions
+		var shuffle = (0..3).scramble;
+		// on appelle le générateur de cellules, avec l'adresse
+		// et les Bus d'entrée en ordre aléatoire
+		var cell = Cell_Group(cellParGroup, busses[x][y],
+			inBusses[shuffle[0]], inBusses[shuffle[1]],
+			inBusses[shuffle[2]], inBusses[shuffle[3]]);
+		// si la vue est activée, ajouter les informations dans la carte
+		if(viewMap.notNil, {
+			viewMap[x][y] = [cell.gen.mode, shuffle];
+		});
+		// retourner la cellule
+		^cell;
 	}
 
 	// arrêt de la grille
@@ -208,6 +238,11 @@ Cell_Matrix {
 			cells.do({|row| row.do({|item| item.release})});
 			// attendre l'arrêt
 			2.wait;
+			// si la vue est active, l'arrêter
+			if(view.notNil, {
+				viewRefresh.stop;
+				{view.close}.defer;
+			});
 			// supprimer le groupe parallèle
 			cellParGroup.free;
 			// supprimer la sortie

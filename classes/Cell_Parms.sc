@@ -1,6 +1,6 @@
 Cell_Parms : Array {
 
-	*gen {|weights = #[0.5, 0,5, 0.5, 0.5, 0.5],
+	*gen {|weights = #[0.5, 0.5, 0.5, 0.5, 0.5],
 		nseMax = 1.0, nseLowOct = -3.0, nseHighOct = 3.0,
 		fwdMax = 1.0,
 		delMaxExp = 8.0,
@@ -57,7 +57,12 @@ Cell_Parms : Array {
 		^super.with('flyturtle', linSpeed, angSpeed, [levels, times]);
 	}
 
-	*outTurtle{|speed = 0.25|
-		^super.with('turtle', speed);
+	*outMapView{|linSpeed, angSpeed, zSpeed|
+		^super.with('mapview', linSpeed, angSpeed, zSpeed);
 	}
+
+	*outMapViewCycle{|linSpeed, angSpeed, levels, times|
+		^super.with('mapview', linSpeed, angSpeed, [levels, times]);
+	}
+
 }

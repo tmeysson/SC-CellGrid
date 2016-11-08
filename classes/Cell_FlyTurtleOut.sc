@@ -11,7 +11,7 @@ Cell_FlyTurtleOut {
 				xpos, ypos, xsize, ysize, xbus, ybus, phibus, zbus|
 				var dx = xpos - In.kr(xbus);
 				var dy = ypos - In.kr(ybus);
-				var dn, dt;
+				var dt, dn;
 				var scope = In.kr(zbus);
 				var phi = In.kr(phibus);
 				var dist;
@@ -21,14 +21,16 @@ Cell_FlyTurtleOut {
 				// distance Euclidienne
 				dist = (dx.squared + dy.squared).sqrt;
 				// distance normale et tangentielle
-				dn = (dx * cos(phi)) + (dy * sin(phi));
-				dt = (dx * sin(phi)) + (dy * cos(phi).neg);
+				dt = (dx * cos(phi)) + (dy * sin(phi));
+				dn = (dx * sin(phi)) + (dy * cos(phi).neg);
 				Out.ar(out, Pan2.ar(In.ar(in) * vol * (1/(scope**2)) *
 					max(0, 1 - (dist/scope)),
-					dt / max(max(dn, dt), 1.0))
+					dn / max(max(dn, dt), 1.0))
 				);
 			}),
-			SynthDef('genPos', {|xbus, ybus, phibus, linspeed, angspeed, size|
+			SynthDef('genPos', {|xbus, ybus, phibus, linspeed, angspeed,
+				xsize, ysize|
+				var size = max(xsize, ysize);
 				// calcul de l'angle phi
 				var phi = LFSaw.kr(
 					LFNoise1.kr(angspeed).range(angspeed.neg, angspeed)
@@ -38,9 +40,9 @@ Cell_FlyTurtleOut {
 				// sortie de phi
 				Out.kr(phibus, phi);
 				// calcul de la position x
-				Out.kr(xbus, LFSaw.kr(speed * cos(phi)));
+				Out.kr(xbus, LFSaw.kr(speed * cos(phi)).range(0,xsize));
 				// calcul de la position y
-				Out.kr(ybus, LFSaw.kr(speed * sin(phi)));
+				Out.kr(ybus, LFSaw.kr(speed * sin(phi)).range(0,ysize));
 			}),
 			// générateur d'altitude
 			if(altCycle.notNil,
@@ -79,7 +81,7 @@ Cell_FlyTurtleOut {
 		zBus = Bus.control.setSynchronous(1);
 
 		hPosGen = Synth('genPos', ['xbus', xBus, 'ybus', yBus, 'phibus', phiBus,
-			'linspeed', linSpeed, 'angspeed', angSpeed, 'size', max(xSize, ySize)]);
+			'linspeed', linSpeed, 'angspeed', angSpeed, 'xsize', xSize, 'ysize', ySize]);
 		zPosGen = Synth('genAlt', ['out', zBus, 'speed',
 			if(altParm.isNumber, {altParm}, {nil}), 'size', min(xSize, ySize)]);
 
