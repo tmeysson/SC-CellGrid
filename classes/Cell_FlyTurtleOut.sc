@@ -23,7 +23,7 @@ Cell_FlyTurtleOut {
 				// distance normale et tangentielle
 				dt = (dx * cos(phi)) + (dy * sin(phi));
 				dn = (dx * sin(phi)) + (dy * cos(phi).neg);
-				Out.ar(out, Pan2.ar(In.ar(in) * vol * (1/(scope**2)) *
+				Out.ar(out, Pan2.ar(In.ar(in) * vol * (scope ** -1.25) *
 					max(0, 1 - (dist/scope)),
 					dn / max(max(dn, dt), 1.0))
 				);

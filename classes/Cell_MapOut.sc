@@ -24,7 +24,7 @@ Cell_MapOut {
 				// attention, dans la représentation graphique
 				// la droite et la gauche sont inversées (!)
 				dn = (dx * sin(phi).neg) + (dy * cos(phi));
-				Out.ar(out, Pan2.ar(In.ar(in) * vol * (scope ** -1.5) *
+				Out.ar(out, Pan2.ar(In.ar(in) * vol * (scope ** -1.25) *
 					max(0, 1 - (dist/scope)),
 					dn / max(max(dn, dt), 1.0))
 				);
@@ -92,7 +92,7 @@ Cell_MapOut {
 		var xSize = busses.size;
 		var ySize = busses[0].size;
 
-		posBus = Bus.control(numChannels: 4).setSynchronous(0,0,0,1);
+		posBus = Bus.control(numChannels: 4).setSynchronous(0,0,1,0);
 
 		posGen = Synth('genPos', ['pos', posBus,
 			'linspeed', linSpeed, 'angspeed', angSpeed,
