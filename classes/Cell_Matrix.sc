@@ -119,6 +119,10 @@ Cell_Matrix {
 				'mapview', { Cell_MapOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
 					viewMap = Array.fill2D(gridSize, gridSize, { nil });
+				},
+				'circleview', { Cell_MapOut.addDefs(
+					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
+					viewMap = Array.fill2D(gridSize, gridSize, { nil });
 				}
 			);
 			// attendre la synchro après ajout des définitions
@@ -150,6 +154,8 @@ Cell_Matrix {
 				'flyturtle', { out = Cell_FlyTurtleOut(busses, volume,
 					outParms[1], outParms[2], outParms[3])},
 				'mapview', { out = Cell_MapOut(busses, volume,
+					outParms[1], outParms[2], outParms[3])},
+				'circleview', { out = Cell_MapOut(busses, volume,
 					outParms[1], outParms[2], outParms[3])}
 			);
 
@@ -180,16 +186,28 @@ Cell_Matrix {
 			}).play;
 
 			// si requis, créer la vue
-			if(viewMap.notNil, {
-				{view = Cell_Map(viewMap)}.defer;
-				viewRefresh = Routine({
-					{
-						0.1.wait;
-						{view.refresh}.defer;
-						out.posBus.getn(4, {|pos| view.setPos(pos)});
-					}.loop;
-				}).play;
-			});
+			switch(outParms[0],
+				'mapview', {
+					{view = Cell_Map(viewMap)}.defer;
+					viewRefresh = Routine({
+						{
+							0.1.wait;
+							{view.refresh}.defer;
+							out.posBus.getn(4, {|pos| view.setPos(pos)});
+						}.loop;
+					}).play;
+				},
+				'circleview', {
+					{view = Cell_CircleMap(viewMap)}.defer;
+					viewRefresh = Routine({
+						{
+							0.1.wait;
+							{view.refresh}.defer;
+							out.posBus.getn(4, {|pos| view.setPos(pos)});
+						}.loop;
+					}).play;
+				}
+			);
 
 			if(stopAfter.notNil,
 				{

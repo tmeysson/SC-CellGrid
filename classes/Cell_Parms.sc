@@ -65,4 +65,12 @@ Cell_Parms : Array {
 		^super.with('mapview', linSpeed, angSpeed, [levels, times]);
 	}
 
+	*outCircleView{|linSpeed, angSpeed, zSpeed|
+		^super.with('circleview', linSpeed, angSpeed, zSpeed);
+	}
+
+	*outCircleViewCycle{|linSpeed, angSpeed, levels, times|
+		^super.with('circleview', linSpeed, angSpeed, [levels, times]);
+	}
+
 }
