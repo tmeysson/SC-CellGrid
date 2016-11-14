@@ -130,15 +130,15 @@ Cell_Matrix {
 					if(outParms[2].isSequenceableCollection, {outParms[2]}, {nil})
 				)},
 				// idem avec tortue (progression en coord polaires)
-				'flyturtle', { Cell_FlyTurtleOut.addDefs(
+				'turtle', { Cell_TurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil})
 				)},
 				// idem avec représentation graphique
-				'mapview', { Cell_MapOut.addDefs(
+				'mapview', { Cell_TurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
 					viewMap = Array.fill2D(gridSize, gridSize, { nil });
 				},
-				'circleview', { Cell_MapOut.addDefs(
+				'circleview', { Cell_TurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
 					viewMap = Array.fill2D(gridSize, gridSize, { nil });
 				}
@@ -176,11 +176,11 @@ Cell_Matrix {
 				'walk', {out = Cell_WalkOut(busses, volume, outParms[1])},
 				'fly', { out = Cell_FlyOut(busses, volume, outParms[1], outParms[2])},
 				'flypan', { out = Cell_FlyPanOut(busses, volume, outParms[1], outParms[2])},
-				'flyturtle', { out = Cell_FlyTurtleOut(busses, volume,
+				'turtle', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'mapview', { out = Cell_MapOut(gateBus, busses, volume,
+				'mapview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'circleview', { out = Cell_MapOut(gateBus, busses, volume,
+				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])}
 			);
 

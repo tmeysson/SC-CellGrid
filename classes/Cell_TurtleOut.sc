@@ -1,4 +1,4 @@
-Cell_MapOut {
+Cell_TurtleOut {
 	classvar defs;
 
 	var synths;
@@ -10,7 +10,7 @@ Cell_MapOut {
 		defs = [
 			if(numSysOut >= 4,
 				{
-					SynthDef('cellMapOut', {|out = 0, in, vol = 0,
+					SynthDef('cellTurtleOut', {|out = 0, in, vol = 0,
 						xpos, ypos, xsize, ysize, pos|
 						var dx = xpos - In.kr(pos);
 						var dy = ypos - In.kr(pos+1);
@@ -40,7 +40,7 @@ Cell_MapOut {
 						);
 					})
 				}, {
-					SynthDef('cellMapOut', {|out = 0, in, vol = 0,
+					SynthDef('cellTurtleOut', {|out = 0, in, vol = 0,
 						xpos, ypos, xsize, ysize, pos|
 						var dx = xpos - In.kr(pos);
 						var dy = ypos - In.kr(pos+1);
@@ -145,7 +145,7 @@ Cell_MapOut {
 
 		synths = busses.collect({|row, x|
 			row.collect({|item, y|
-				Synth('cellMapOut', ['out', out, 'in', item, 'vol', volume,
+				Synth('cellTurtleOut', ['out', out, 'in', item, 'vol', volume,
 					'xpos', x, 'ypos', y, 'xsize', xSize, 'ysize', ySize,
 					'pos', posBus]);
 			});
