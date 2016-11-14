@@ -134,15 +134,10 @@ Cell_Gen : Synth {
 							defWeights[index] = p1 * p2 * p3 * p4 * p5;
 							// la définition résultante
 							defs[index] = SynthDef(("cellGen"+i+j+k+l+m).asSymbol,
-								{|out, gate = 1|
+								{|out|
 									// fréquence de l'oscillateur (avec modulation)
 									var freq = 2 ** Rand(7.0, 11.0);
 									Out.ar(out,
-										// enveloppe dynamique:
-										// attaque: 1s, chute: 1s, entretien: 100%;
-										// continue jusqu'à ce que gate devienne 0
-										// arrête le groupe tout entier à la fin
-										EnvGen.kr(Env.asr(1, 1, 1, 'lin'), gate, doneAction: 2) *
 										fDelay.value(
 											// modulation en anneau
 											fAM.value(
@@ -184,7 +179,7 @@ Cell_Gen : Synth {
 			['out', out, 'freqMod', freqMod, 'ampMod', ampMod,
 				'delay', delay, 'forward', forward],
 			// on ajoute dans le groupe de la cellule
-			group).onFree({group.free}).init(modeNum);
+			group).init(modeNum);
 	}
 
 	init {|modeNum|

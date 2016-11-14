@@ -21,9 +21,9 @@ Cell_Group : Group {
 
 	// suppression
 	free {
-		// il faut supprimer la chaîne
+		// il faut supprimer les Bus de la chaîne
 		pipe.free;
-		// super.free se charge du générateur
+		// super.free se charge des Synth
 		^super.free;
 	}
 }

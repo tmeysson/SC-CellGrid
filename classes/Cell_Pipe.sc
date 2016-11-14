@@ -88,6 +88,17 @@ Cell_Pipe {
 
 		// ajouter les effets dans le serveur
 		defs.do({|item| item.add });
+
+		// ajouter la définition du fade in/out
+		SynthDef('pipeGate', {|out, in, gate = 1|
+			Out.ar(out,
+				// enveloppe dynamique:
+				// attaque: 1s, chute: 1s, entretien: 100%;
+				// continue jusqu'à ce que gate devienne 0
+				// arrête le groupe tout entier à la fin
+				EnvGen.kr(Env.asr(1, 1, 1, 'lin'), gate, doneAction: 2) *
+				In.ar(in));
+		}).add;
 	}
 
 	// création d'une chaîne d'effets
@@ -100,7 +111,8 @@ Cell_Pipe {
 	init {|group, out|
 		// le Bus de sortie au cours du calcul
 		var curOut = out;
-		//var numDefs = defs.size;
+		// le Bus d'entrée du fade in/out
+		var fadeBus;
 
 		// on utilise des List pour pouvoir appeler .add sans problème
 		// la chaîne d'effets
@@ -109,6 +121,14 @@ Cell_Pipe {
 		mods = List(0);
 		// les Bus de liaison associés
 		busses = List(0);
+
+		// on ajoute le fade in/out
+		fadeBus = Bus.audio;
+		busses.add(fadeBus);
+		chain.add(Synth('pipeGate', ['out', curOut, 'in', fadeBus],
+			// on ajoute dans le groupe et on le libère lorsque l'enveloppe est terminée
+			group).onFree({group.free}));
+		curOut = fadeBus;
 
 		// on itère sur les définitions
 		defs.do({|def, i|
@@ -123,8 +143,7 @@ Cell_Pipe {
 				busses.add(modIn);
 
 				// on ajoute le Synth correspondant dans le groupe de la cellule
-				chain.add(Synth(def.name, ['out', curOut, 'in', newIn, 'mod', modIn], group)
-				);
+				chain.add(Synth(def.name, ['out', curOut, 'in', newIn, 'mod', modIn], group));
 
 				// on ajoute également un modulateur
 				mods.add(Cell_Mod(group, modIn));
