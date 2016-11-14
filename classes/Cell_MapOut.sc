@@ -128,11 +128,11 @@ Cell_MapOut {
 		defs.do({|item| item.add });
 	}
 
-	*new {|busses, volume, linSpeed, angSpeed, altParm|
-		^super.new.init(busses, volume, linSpeed, angSpeed, altParm);
+	*new {|out, busses, volume, linSpeed, angSpeed, altParm|
+		^super.new.init(out, busses, volume, linSpeed, angSpeed, altParm);
 	}
 
-	init {|busses, volume, linSpeed, angSpeed, altParm|
+	init {|out, busses, volume, linSpeed, angSpeed, altParm|
 		var xSize = busses.size;
 		var ySize = busses[0].size;
 
@@ -145,7 +145,7 @@ Cell_MapOut {
 
 		synths = busses.collect({|row, x|
 			row.collect({|item, y|
-				Synth('cellMapOut', ['out', 0, 'in', item, 'vol', volume,
+				Synth('cellMapOut', ['out', out, 'in', item, 'vol', volume,
 					'xpos', x, 'ypos', y, 'xsize', xSize, 'ysize', ySize,
 					'pos', posBus]);
 			});

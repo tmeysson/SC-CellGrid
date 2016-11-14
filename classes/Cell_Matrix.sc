@@ -6,6 +6,8 @@ Produit également un module de sortie au choix
 Possibilité d'enregistrer la sortie
 */
 Cell_Matrix {
+	// fade in/out global
+	var gateSynth, gateBus;
 	// grille des Bus de sortie des cellules
 	var busses;
 	// grille des générateurs des cellules et groupe parallèle englobant
@@ -74,6 +76,10 @@ Cell_Matrix {
 	}
 
 	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter|
+		// nombre de sorties, suivant les sorties système
+		var numOutChannels = if(
+			"jack_lsp|grep system:playback|wc -l".unixCmdGetStdOut.asInteger >= 4,
+			{ 4 }, { 2 });
 		// initialisation de la taille de la grille
 		gridSize = size;
 
@@ -97,6 +103,18 @@ Cell_Matrix {
 			Cell_Gen.addDefs(genParms);
 			Cell_Pipe.addDefs(pipeParms);
 			Cell_Mod.addDefs(modParms);
+
+			// ajouter le fade in/out global
+			SynthDef('globalGate', {|out, in, gate = 1|
+				Out.ar(out,
+					// enveloppe dynamique:
+					// attaque: 5s, chute: 5s, entretien: 100%;
+					// continue jusqu'à ce que gate devienne 0
+					// arrête le groupe tout entier à la fin
+					EnvGen.kr(Env.asr(5, 1, 5, 'lin'), gate, doneAction: 2) *
+					In.ar(in, numOutChannels));
+			}).add;
+
 			// suivant le type de sortie choisie, ajouter les définitions correspondantes
 			switch(outParms[0],
 				// somme des sorties
@@ -138,12 +156,19 @@ Cell_Matrix {
 				}, { isRec = false; }
 			);
 
+			// créer le Bus du fade in/out
+			// le nombre de canaux dépend du nombre de sorties
+			gateBus = Bus.audio(numChannels: numOutChannels);
+
 			// créer les Bus de sortie
 			busses = Array.fill2D(gridSize, gridSize, { Bus.audio });
 
 			// on procède de la fin de la chaîne vers le début
 			// de façon à assurer la causalité du calcul
 			// (et donc la présence effective des valeurs sur les Bus audio)
+
+			// créer le fade in/out
+			gateSynth = Synth('globalGate', ['out', 0, 'in', gateBus]);
 
 			// créer le module de sortie
 			switch(outParms[0],
@@ -153,9 +178,9 @@ Cell_Matrix {
 				'flypan', { out = Cell_FlyPanOut(busses, volume, outParms[1], outParms[2])},
 				'flyturtle', { out = Cell_FlyTurtleOut(busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'mapview', { out = Cell_MapOut(busses, volume,
+				'mapview', { out = Cell_MapOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'circleview', { out = Cell_MapOut(busses, volume,
+				'circleview', { out = Cell_MapOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])}
 			);
 
@@ -252,6 +277,11 @@ Cell_Matrix {
 		renew.stop;
 
 		Routine({
+			// arrêter la sortie globale avec .release
+			gateSynth.release;
+			// gateSynth.set('gate', 0);
+			// attendre l'arrêt
+			5.wait;
 			// arrêter les cellules (en déclenchant la chute)
 			cells.do({|row| row.do({|item| item.release})});
 			// attendre l'arrêt
@@ -266,6 +296,7 @@ Cell_Matrix {
 			// supprimer la sortie
 			out.free;
 			// supprimer les Bus
+			gateBus.free;
 			busses.do({|row| row.do({|item| item.free})});
 			// si l'enregistrement est actif, l'arrêter
 			if (isRec, { recorder.free });
