@@ -73,19 +73,22 @@ Cell_MapOut {
 						var size = max(xsize, ysize);
 						// calcul de l'angle phi
 						var phi = LFSaw.kr(
-							LFNoise1.kr(/*angspeed*/ 1).range(angspeed.neg, angspeed)
+							LFNoise1.kr(angspeed * 4).range(angspeed.neg, angspeed)
 						).range(0, 2pi);
+						// calcul de l'altitude
+						// cycle programmé
+						var zPos = max(1, min((min(xsize,ysize)/2)+0.5,
+								EnvGen.kr(Env.circle(altCycle[0], altCycle[1]))));
 						// calcul de la vitesse
-						var speed = LFNoise1.kr(/*linspeed*/ 1).range(0, linspeed/size);
+						// variable suivant le niveau d'altitude
+						var speed = LFNoise1.kr(linspeed * 4).range(0, linspeed*zPos/size);
 						Out.kr(pos, [
 							// calcul de la position x
 							LFSaw.kr(speed * cos(phi)).range(0, xsize),
 							// calcul de la position y
 							LFSaw.kr(speed * sin(phi)).range(0, ysize),
-							// générateur d'altitude
-							// cycle programmé
-							max(1, min((min(xsize,ysize)/2)+0.5,
-								EnvGen.kr(Env.circle(altCycle[0], altCycle[1])))),
+							// sortie d'altitude
+							zPos,
 							// sortie de phi
 							phi
 						]);
@@ -96,21 +99,24 @@ Cell_MapOut {
 						var minSize = min(xsize, ysize);
 						// calcul de l'angle phi
 						var phi = LFSaw.kr(
-							LFNoise1.kr(angspeed).range(angspeed.neg, angspeed)
+							LFNoise1.kr(angspeed * 4).range(angspeed.neg, angspeed)
 						).range(0, 2pi);
-						// calcul de la vitesse
-						var speed = LFNoise1.kr(linspeed).range(0, linspeed/maxSize);
+						// générateur d'altitude
+						// altitude aléatoire
 						var valRange = zspeed/minSize;
+						var zPos = SinOsc.kr(
+							LFNoise1.kr(zspeed).range(valRange.neg, valRange)
+						).range(1,(minSize/2)+0.5);
+						// calcul de la vitesse
+						// variable suivant le niveau d'altitude
+						var speed = LFNoise1.kr(linspeed).range(0, linspeed*zPos/maxSize);
 						Out.kr(pos, [
 							// calcul de la position x
 							LFSaw.kr(speed * cos(phi)).range(0, xsize),
 							// calcul de la position y
 							LFSaw.kr(speed * sin(phi)).range(0, ysize),
-							// générateur d'altitude
-							// altitude aléatoire
-							SinOsc.kr(
-								LFNoise1.kr(speed).range(valRange.neg, valRange)
-							).range(1,(minSize/2)+0.5),
+							// sortie d'altitude
+							zPos,
 							// sortie de phi
 							phi
 						]);
