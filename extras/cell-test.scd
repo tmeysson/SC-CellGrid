@@ -61,7 +61,7 @@ a = Cell_Matrix(8, 0.75, 0.5, Cell_Parms.outFlyPanCycle(2, [1,1,2,2,3,3,4,4],[11
 a = Cell_Matrix(8, 0.75, 0.5, Cell_Parms.outFlyPanCycle(2, [4,4,1],[30,8,352]));
 
 // la tortue !!! (déplacement en coordonnées polaires)
-a = Cell_Matrix(8, 0.1, 0.5, Cell_Parms.outTurtleCycle(0.5, 0.25, [1,1,2,2,3,3,4,4],[112,8]));
+a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outTurtleCycle(0.5, 0.25, [1,1,2,2,3,3,4,4],[112,8]));
 
 // de grosses grilles (40%-45% CPU sur Core i5 avec supernova)
 a = Cell_Matrix(12, 0.75, 0.5, Cell_Parms.outFlyPanCycle(2, [1,1,2,2,3,3,4,4,5,5,6,6],[52,8]));
@@ -106,13 +106,13 @@ a = Cell_Matrix(12, 0.75, 0.5, Cell_Parms.outFlyPanCycle(2,
 )
 
 // avec représentation graphique
-a = Cell_Matrix(8, 0.1, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4],[112,8]));
-a = Cell_Matrix(10, 0.1, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4,5,5],[112,8]));
-a = Cell_Matrix(12, 0.1, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4,5,5,6,6],[112,8]));
+a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4],[112,8]));
+a = Cell_Matrix(10, 0.2, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4,5,5],[112,8]));
+a = Cell_Matrix(12, 0.2, 0.5, Cell_Parms.outMapViewCycle(0.5, 0.25, [1,1,2,2,3,3,4,4,5,5,6,6],[112,8]));
 // representation circulaire
-a = Cell_Matrix(8, 0.1, 0.5, Cell_Parms.outCircleView(0.2, 0.05, 0.125));
-a = Cell_Matrix(8, 0.1, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,4,4],[30,300,30,8]));
-a = Cell_Matrix(12, 0.1, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,6,6],[30,300,30,8]));
+a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleView(0.2, 0.05, 0.125));
+a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,4,4],[30,300,30,8]));
+a = Cell_Matrix(12, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,6,6],[30,300,30,8]));
 
 // arrête la simulation
 a.free;

@@ -146,7 +146,8 @@ Cell_Gen : Synth {
 														// oscillateur sinusoïdal
 														SinOsc.ar(
 															// modulation de fréquence
-															fFM.value(freq)
+															fFM.value(freq),
+															mul: 0.5
 															// clip sur [-1,1]
 														).clip(-1,1)
 													), freq
