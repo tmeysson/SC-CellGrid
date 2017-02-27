@@ -65,7 +65,7 @@ Cell_Gen : Synth {
 					((1 - noiseAmt) * body +
 						// mélange de bruit
 						(noiseAmt * LPF.ar(HPF.ar((
-							WhiteNoise.ar), noiseLow), noiseHigh).clip(-1,1))) }
+							WhiteNoise.ar(0.25)), noiseLow), noiseHigh).clip(-1,1))) }
 				}, {
 					{|body, freq| body }
 			});
@@ -147,7 +147,7 @@ Cell_Gen : Synth {
 														SinOsc.ar(
 															// modulation de fréquence
 															fFM.value(freq),
-															mul: 0.5
+															mul: 0.25
 															// clip sur [-1,1]
 														).clip(-1,1)
 													), freq
