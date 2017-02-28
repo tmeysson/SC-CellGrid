@@ -43,7 +43,7 @@ Cell_Pipe {
 			SynthDef('pipePitch', {|out, in, mod|
 				Out.ar(out, PitchShift.ar(In.ar(in), 0.05,
 					// ratio sur 2**([-2, 2] * pitchAmt)
-					2 ** ((In.kr(mod) - 0.5) * 4 * pitchAmt), 0, 0.0005).clip(-1,1));
+					2 ** ((In.kr(mod) - 0.5) * 4 * pitchAmt), 0, 0.0005));
 			}),
 			// pitch shift quantifié
 			SynthDef('pipeStairPitch', {|out, in, mod|
@@ -56,19 +56,19 @@ Cell_Pipe {
 				// le ratio est la valeur d'octave sur {0.5, 1, 2}
 				// multiplié par la valeur de quinte sur {1, 1.5}
 				var ratio = (2**oct) * (1 + (0.5 * fifth));
-				Out.ar(out, PitchShift.ar(In.ar(in), 0.05, ratio, 0, 0.0005).clip(-1,1));
+				Out.ar(out, PitchShift.ar(In.ar(in), 0.05, ratio, 0, 0.0005));
 			}),
 			// modulation d'amplitude
 			SynthDef('pipeAmp', {|out, in, mod|
 				// la fréquence de modulation varie exponentiellement sur 2**ampModFreqInt[]
 				var freq = 2 ** Rand(ampModFreqInt[0], ampModFreqInt[1]);
 				Out.ar(out, (In.ar(in) *
-					(1 + (SinOsc.kr(freq).range(-1,0) * In.kr(mod)))).clip(-1,1));
+					(1 + (SinOsc.kr(freq).range(-1,0) * In.kr(mod)))));
 			}),
 			// distorsion
 			SynthDef('pipeDist', {|out, in, mod|
 				// on élève le signal à une puissance sur [2**(-distFact), 1]
-				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod) * distFact).neg)).clip(-1,1));
+				Out.ar(out, (In.ar(in) ** (2**(In.kr(mod) * distFact).neg)));
 			}),
 			// reverb
 			SynthDef('pipeRev', {|out, in, mod|
@@ -76,7 +76,7 @@ Cell_Pipe {
 					// taille de la pièce
 					Rand(revRoomInt[0],revRoomInt[1]),
 					// amortissement des aigüs
-					Rand(revDampInt[0],revDampInt[1])).clip(-1,1));
+					Rand(revDampInt[0],revDampInt[1])));
 			})
 			// il faut inverser l'ordre car les effets sont ajoutés du dernier au premier
 		].reverse;
