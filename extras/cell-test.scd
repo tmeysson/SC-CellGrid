@@ -100,9 +100,9 @@ a = Cell_Matrix(8, 0.75, 0.5, Cell_Parms.outFlyPanCycle(2, [4,4,1,1,2,2,3,3],[22
 // paramètres standard
 a = Cell_Matrix(12, 0.2, 0.5, Cell_Parms.outTurtleCycle(0.2, 0.05,
 	// paramètres de programmation d'altitude
-	[6,6,1,1,2,2,3,3,4,4,5,5,6],[30]++[8!6, 52!6].lace(12)),
+	[6,6,1,1,2,2,3,3,4,4,5,5,6],[30]++[8!6, 82!6].lace(12)),
 	// paramètres d'enregistrement
-	rec: Cell_Parms.rec(5, 5, 420), stopAfter: 420);
+	rec: Cell_Parms.rec(5, 5, 570), stopAfter: 570);
 )
 
 // avec représentation graphique
