@@ -114,5 +114,8 @@ a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleView(0.2, 0.05, 0.125));
 a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,4,4],[30,300,30,8]));
 a = Cell_Matrix(12, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,6,6],[30,300,30,8]));
 
+// dôme
+a = Cell_Dome([[4,6,8],4], 0.2);
+
 // arrête la simulation
 a.free;
