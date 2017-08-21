@@ -228,7 +228,7 @@ Cell_Matrix {
 					// arrêter la cellule (la méthode release permet de déclencher la chute)
 					cells.atND(ind).release;
 					// créer une nouvelle cellule
-					cells.atND(ind) = this.newCell(ind);
+					cells.putND(ind, this.newCell(ind));
 					// boucle infinie
 				}.loop;
 				// lancer le processus principal
@@ -318,11 +318,11 @@ Cell_Matrix {
 		var shuffle = (0..gridSize.size*2-1).scramble[..3];
 		// on appelle le générateur de cellules, avec l'adresse
 		// et les Bus d'entrée en ordre aléatoire
-		var cell = Cell_Group(cellParGroup, f2.(busses, indexes),
+		var cell = Cell_Group(cellParGroup, busses.atND(indexes),
 			*inBusses[shuffle]);
 		// si la vue est activée, ajouter les informations dans la carte
 		if(viewMap.notNil, {
-			viewMap.atND(indexes) = [cell.gen.mode, shuffle];
+			viewMap.putND(indexes,[cell.gen.mode, shuffle]);
 		});
 		// retourner la cellule
 		^cell;
