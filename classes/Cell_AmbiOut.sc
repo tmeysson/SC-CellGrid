@@ -3,4 +3,8 @@ Cell_AmbiOut {
 	*addDefs {
 		// module de sortie AmbiSonic
 	}
+
+	*new {|gateBus, busses, volume|
+		^super.new;
+	}
 }
