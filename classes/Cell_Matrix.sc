@@ -69,19 +69,23 @@ Cell_Matrix {
 	*/
 	*new {|size = 2, volume = 0, renewalTime = 4,
 		outParms = #['sum'], genParms, pipeParms, modParms,
-		rec, stopAfter|
+		rec, stopAfter, outChannels|
 		^super.new.init(size, volume, renewalTime,
 			outParms, genParms, pipeParms, modParms,
-			rec, stopAfter);
+			rec, stopAfter, outChannels);
 	}
 
-	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter|
+	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter, outChannels|
 		// nombre de sorties, suivant les sorties système
-		var numOutChannels = if(
-			"jack_lsp|grep system:playback|wc -l".unixCmdGetStdOut.asInteger >= 4,
-			{ 4 }, { 2 });
+		// ou bien le nombre spécifié (pour les installations type dôme)
+		var numOutChannels = outChannels ?? {
+			if("jack_lsp|grep system:playback|wc -l".unixCmdGetStdOut.asInteger >= 4)
+			{ 4 } { 2 };
+		};
 		// initialisation de la taille de la grille
 		gridSize = size;
+		// gestion simple des tailles en 2D
+		if (gridSize.isNumber) {gridSize = gridSize ! 2};
 
 		// création du fil d'exécution
 		thread = Routine({
@@ -136,12 +140,15 @@ Cell_Matrix {
 				// idem avec représentation graphique
 				'mapview', { Cell_TurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
-					viewMap = Array.fill2D(gridSize, gridSize, { nil });
+					viewMap = Array.fillND(gridSize, { nil });
 				},
 				'circleview', { Cell_TurtleOut.addDefs(
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
-					viewMap = Array.fill2D(gridSize, gridSize, { nil });
-				}
+					viewMap = Array.fillND(gridSize, { nil });
+				},
+				'ambi', { Cell_AmbiOut.addDefs(
+					// TODO: paramètres à spécifier
+				)}
 			);
 			// attendre la synchro après ajout des définitions
 			Server.default.sync;
@@ -161,7 +168,18 @@ Cell_Matrix {
 			gateBus = Bus.audio(numChannels: numOutChannels);
 
 			// créer les Bus de sortie
-			busses = Array.fill2D(gridSize, gridSize, { Bus.audio });
+			// suivant le nombre de dimensions
+			// case
+			// cas de base en 2D
+			// {gridSize.isNumber}
+			// {
+			// busses = Array.fill2D(gridSize, gridSize, { Bus.audio });
+			// }
+			// cas en ND
+			// {gridSize.isArray}
+			// {
+			busses = Array.fillND(gridSize, {Bus.audio});
+			// }
 
 			// on procède de la fin de la chaîne vers le début
 			// de façon à assurer la causalité du calcul
@@ -181,34 +199,59 @@ Cell_Matrix {
 				'mapview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
-					outParms[1], outParms[2], outParms[3])}
+					outParms[1], outParms[2], outParms[3])},
+				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume,
+					// TODO: paramètres à spécifier
+				)}
 			);
 
 			// créer un groupe parallèle pour les cellules
 			cellParGroup = ParGroup();
 			// créer les cellules (générateurs, chaînes d'effets et modulateurs)
-			cells = Array.fill2D(gridSize, gridSize, {|x, y|
-				this.newCell(x, y);
+			cells = Array.fillND(gridSize, {|... indexes|
+				this.newCell(indexes);
 			});
+
+			// ancienne version 2D
+			// cells = Array.fill2D(gridSize, gridSize, {|x, y|
+			// 	this.newCell(x, y);
+			// });
 
 			renew = Routine({
 				// démarrer le renouvellement des cellules
 				{
 					// adresse de la cellule à renouveller
-					var x, y;
+					// choisir une adresse au hasard (liste d'entiers sur [0,...],gridSize-[1,...])
+					var ind = gridSize.rand;
 					// attendre la période demandée
 					renewalTime.wait;
-					// choisir une adresse au hasard (entier sur [0, gridSize-1])
-					x = gridSize.rand;
-					y = gridSize.rand;
 					// arrêter la cellule (la méthode release permet de déclencher la chute)
-					cells[x][y].release;
+					cells.atND(ind).release;
 					// créer une nouvelle cellule
-					cells[x][y] = this.newCell(x, y);
+					cells.atND(ind) = this.newCell(ind);
 					// boucle infinie
 				}.loop;
 				// lancer le processus principal
 			}).play;
+
+			// renew = Routine({
+			// 	// démarrer le renouvellement des cellules
+			// 	{
+			// 		// adresse de la cellule à renouveller
+			// 		var x, y;
+			// 		// attendre la période demandée
+			// 		renewalTime.wait;
+			// 		// choisir une adresse au hasard (entier sur [0, gridSize-1])
+			// 		x = gridSize.rand;
+			// 		y = gridSize.rand;
+			// 		// arrêter la cellule (la méthode release permet de déclencher la chute)
+			// 		cells[x][y].release;
+			// 		// créer une nouvelle cellule
+			// 		cells[x][y] = this.newCell(x, y);
+			// 		// boucle infinie
+			// 	}.loop;
+			// 	// lancer le processus principal
+			// }).play;
 
 			// si requis, créer la vue
 			switch(outParms[0],
@@ -248,28 +291,66 @@ Cell_Matrix {
 	}
 
 	// créer une cellule à l'adresse indiquée
-	newCell {|x, y|
-		// Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
-		var inBusses = [
-			busses[x][(y+1)%gridSize],
-			busses[(x+1)%gridSize][y],
-			busses[x][(y-1)%gridSize],
-			busses[(x-1)%gridSize][y]
-		];
+	newCell {|indexes|
+		// Bus d'entrée: les sorties des cellules voisines
+		var rec = {|t,i,d|
+			var first = i.first;
+			var size = d.first;
+			if (i.size > 1) {
+				rec.(t[first], i[1..], d[1..]) ++
+				[t[first-1%size].atND(i[1..])] ++
+				[t[first+1%size].atND(i[1..])]
+			} {
+				[t[first-1%size], t[first+1%size]]
+			}
+		};
+
+		var inBusses = rec.(busses, indexes, gridSize);
+
+		// // Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
+		// var inBusses = [
+		// 	busses[x][(y+1)%gridSize],
+		// 	busses[(x+1)%gridSize][y],
+		// 	busses[x][(y-1)%gridSize],
+		// 	busses[(x-1)%gridSize][y]
+		// ];
 		// ordre aléatoire des directions
-		var shuffle = (0..3).scramble;
+		var shuffle = (0..gridSize.size*2-1).scramble[..3];
 		// on appelle le générateur de cellules, avec l'adresse
 		// et les Bus d'entrée en ordre aléatoire
-		var cell = Cell_Group(cellParGroup, busses[x][y],
-			inBusses[shuffle[0]], inBusses[shuffle[1]],
-			inBusses[shuffle[2]], inBusses[shuffle[3]]);
+		var cell = Cell_Group(cellParGroup, f2.(busses, indexes),
+			*inBusses[shuffle]);
 		// si la vue est activée, ajouter les informations dans la carte
 		if(viewMap.notNil, {
-			viewMap[x][y] = [cell.gen.mode, shuffle];
+			viewMap.atND(indexes) = [cell.gen.mode, shuffle];
 		});
 		// retourner la cellule
 		^cell;
 	}
+
+	// ancienne version 2D
+	// newCell {|x, y|
+	// 	// Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
+	// 	var inBusses = [
+	// 		busses[x][(y+1)%gridSize],
+	// 		busses[(x+1)%gridSize][y],
+	// 		busses[x][(y-1)%gridSize],
+	// 		busses[(x-1)%gridSize][y]
+	// 	];
+	// 	// ordre aléatoire des directions
+	// 	var shuffle = (0..3).scramble;
+	// 	// on appelle le générateur de cellules, avec l'adresse
+	// 	// et les Bus d'entrée en ordre aléatoire
+	// 	var cell = Cell_Group(cellParGroup, busses[x][y],
+	// 		inBusses[shuffle[0]], inBusses[shuffle[1]],
+	// 	inBusses[shuffle[2]], inBusses[shuffle[3]]);
+	// 	// si la vue est activée, ajouter les informations dans la carte
+	// 	if(viewMap.notNil, {
+	// 		viewMap[x][y] = [cell.gen.mode, shuffle];
+	// 	});
+	// 	// retourner la cellule
+	// 	^cell;
+	// }
 
 	// arrêt de la grille
 	free {
@@ -283,7 +364,7 @@ Cell_Matrix {
 			// attendre l'arrêt
 			5.wait;
 			// arrêter les cellules (en déclenchant la chute)
-			cells.do({|row| row.do({|item| item.release})});
+			cells.flat.do {|item| item.release};
 			// attendre l'arrêt
 			2.wait;
 			// si la vue est active, l'arrêter
@@ -297,7 +378,7 @@ Cell_Matrix {
 			out.free;
 			// supprimer les Bus
 			gateBus.free;
-			busses.do({|row| row.do({|item| item.free})});
+			busses.flat.do {|item| item.free};
 			// si l'enregistrement est actif, l'arrêter
 			if (isRec, { recorder.free });
 			// si la terminaison n'est pas encore atteinte, la supprimer
