@@ -20,7 +20,7 @@ Cell_Matrix {
 	var renew;
 	// processus de terminaison
 	var end;
-	// taille de la grille (carré de gridSize*gridSize)
+	// dimensions de la grille (gridSize[0]*gridSize[1]*...)
 	var gridSize;
 	// module d'enregistrement, et variable indiquant si l'enregistrement est activé
 	var recorder, isRec;
