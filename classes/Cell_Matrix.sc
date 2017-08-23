@@ -92,15 +92,16 @@ Cell_Matrix {
 
 			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
 			if((Server.default.options.numAudioBusChannels < 2048) ||
-			(Server.default.options.memSize < (128 * 1024)) ||
-			(Server.default.options.maxNodes < 2048) ||
-			(Server.program == "exec scsynth"), {
-			Server.default.quit;
-			Server.supernova;
-			Server.default.options.maxNodes = 2048;
-			Server.default.options.numAudioBusChannels = 2048;
-			Server.default.options.memSize = 128 * 1024;
-			});
+				(Server.default.options.memSize < (128 * 1024)) ||
+				(Server.default.options.maxNodes < 2048) ||
+				(Server.program == "exec scsynth")) {
+				Server.default.quit;
+				// !! Ne fonctionne pas avec HOAEncoder !!
+				Server.supernova;
+				Server.default.options.maxNodes = 2048;
+				Server.default.options.numAudioBusChannels = 2048;
+				Server.default.options.memSize = 128 * 1024;
+			};
 
 			if(Server.default.options.numOutputBusChannels < numOutChannels)
 			{
@@ -109,11 +110,6 @@ Cell_Matrix {
 			};
 			// démarrer le serveur et attendre la synchro
 			Server.default.bootSync;
-
-			// HOADecLebedev06.loadHrirFilters(Server.default,
-			// "/home/perso/ambitools/FIR/hrir/hrir_ku100_lebedev50");
-			// Server.default.sync;
-
 
 			// ajouter les définitions de modules (générateur, chaîne d'effets, modulateurs)
 			Cell_Gen.addDefs(genParms);
@@ -180,18 +176,7 @@ Cell_Matrix {
 			gateBus = Bus.audio(numChannels: numOutChannels);
 
 			// créer les Bus de sortie
-			// suivant le nombre de dimensions
-			// case
-			// cas de base en 2D
-			// {gridSize.isNumber}
-			// {
-			// busses = Array.fill2D(gridSize, gridSize, { Bus.audio });
-			// }
-			// cas en ND
-			// {gridSize.isArray}
-			// {
 			busses = Array.fillND(gridSize, {Bus.audio});
-			// }
 
 			// on procède de la fin de la chaîne vers le début
 			// de façon à assurer la causalité du calcul
@@ -224,11 +209,6 @@ Cell_Matrix {
 				this.newCell(indexes);
 			});
 
-			// ancienne version 2D
-			// cells = Array.fill2D(gridSize, gridSize, {|x, y|
-			// 	this.newCell(x, y);
-			// });
-
 			renew = Routine({
 				// démarrer le renouvellement des cellules
 				{
@@ -245,25 +225,6 @@ Cell_Matrix {
 				}.loop;
 				// lancer le processus principal
 			}).play;
-
-			// renew = Routine({
-			// 	// démarrer le renouvellement des cellules
-			// 	{
-			// 		// adresse de la cellule à renouveller
-			// 		var x, y;
-			// 		// attendre la période demandée
-			// 		renewalTime.wait;
-			// 		// choisir une adresse au hasard (entier sur [0, gridSize-1])
-			// 		x = gridSize.rand;
-			// 		y = gridSize.rand;
-			// 		// arrêter la cellule (la méthode release permet de déclencher la chute)
-			// 		cells[x][y].release;
-			// 		// créer une nouvelle cellule
-			// 		cells[x][y] = this.newCell(x, y);
-			// 		// boucle infinie
-			// 	}.loop;
-			// 	// lancer le processus principal
-			// }).play;
 
 			// si requis, créer la vue
 			switch(outParms[0],
@@ -319,13 +280,6 @@ Cell_Matrix {
 
 		var inBusses = rec.(busses, indexes, gridSize);
 
-		// // Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
-		// var inBusses = [
-		// 	busses[x][(y+1)%gridSize],
-		// 	busses[(x+1)%gridSize][y],
-		// 	busses[x][(y-1)%gridSize],
-		// 	busses[(x-1)%gridSize][y]
-		// ];
 		// ordre aléatoire des directions
 		var shuffle = (0..gridSize.size*2-1).scramble[..3];
 		// on appelle le générateur de cellules, avec l'adresse
@@ -339,30 +293,6 @@ Cell_Matrix {
 		// retourner la cellule
 		^cell;
 	}
-
-	// ancienne version 2D
-	// newCell {|x, y|
-	// 	// Bus d'entrée: les sorties des cellules voisines, en tournant à partir du nord
-	// 	var inBusses = [
-	// 		busses[x][(y+1)%gridSize],
-	// 		busses[(x+1)%gridSize][y],
-	// 		busses[x][(y-1)%gridSize],
-	// 		busses[(x-1)%gridSize][y]
-	// 	];
-	// 	// ordre aléatoire des directions
-	// 	var shuffle = (0..3).scramble;
-	// 	// on appelle le générateur de cellules, avec l'adresse
-	// 	// et les Bus d'entrée en ordre aléatoire
-	// 	var cell = Cell_Group(cellParGroup, busses[x][y],
-	// 		inBusses[shuffle[0]], inBusses[shuffle[1]],
-	// 	inBusses[shuffle[2]], inBusses[shuffle[3]]);
-	// 	// si la vue est activée, ajouter les informations dans la carte
-	// 	if(viewMap.notNil, {
-	// 		viewMap[x][y] = [cell.gen.mode, shuffle];
-	// 	});
-	// 	// retourner la cellule
-	// 	^cell;
-	// }
 
 	// arrêt de la grille
 	free {

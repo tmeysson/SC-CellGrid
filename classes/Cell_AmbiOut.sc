@@ -8,9 +8,6 @@ Cell_AmbiOut {
 	var posBus, rotBus, zoomBus, posGen;
 
 	*addDefs {
-		// HOADecLebedev26.loadHrirFilters(Server.default,
-		// "/home/perso/ambitools/FIR/hrir/hrir_ku100_lebedev50");
-
 		defs = [
 			// générateur de position
 			SynthDef('ambi-posGen', {
