@@ -89,19 +89,31 @@ Cell_Matrix {
 
 		// création du fil d'exécution
 		thread = Routine({
+
 			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
 			if((Server.default.options.numAudioBusChannels < 2048) ||
-				(Server.default.options.memSize < (128 * 1024)) ||
-				(Server.default.options.maxNodes < 2048) ||
-				(Server.program == "exec scsynth"), {
-					Server.default.quit;
-					Server.supernova;
-					Server.default.options.maxNodes = 2048;
-					Server.default.options.numAudioBusChannels = 2048;
-					Server.default.options.memSize = 128 * 1024;
+			(Server.default.options.memSize < (128 * 1024)) ||
+			(Server.default.options.maxNodes < 2048) ||
+			(Server.program == "exec scsynth"), {
+			Server.default.quit;
+			Server.supernova;
+			Server.default.options.maxNodes = 2048;
+			Server.default.options.numAudioBusChannels = 2048;
+			Server.default.options.memSize = 128 * 1024;
 			});
+
+			if(Server.default.options.numOutputBusChannels < numOutChannels)
+			{
+				Server.default.quit;
+				Server.default.options.numOutputBusChannels = numOutChannels;
+			};
 			// démarrer le serveur et attendre la synchro
 			Server.default.bootSync;
+
+			// HOADecLebedev06.loadHrirFilters(Server.default,
+			// "/home/perso/ambitools/FIR/hrir/hrir_ku100_lebedev50");
+			// Server.default.sync;
+
 
 			// ajouter les définitions de modules (générateur, chaîne d'effets, modulateurs)
 			Cell_Gen.addDefs(genParms);
@@ -201,7 +213,7 @@ Cell_Matrix {
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
 				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume,
-					// TODO: paramètres à spécifier
+					outParms[1], outParms[2], outParms[3], outParms[4]
 				)}
 			);
 

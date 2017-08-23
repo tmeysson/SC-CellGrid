@@ -114,8 +114,65 @@ a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleView(0.2, 0.05, 0.125));
 a = Cell_Matrix(8, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,4,4],[30,300,30,8]));
 a = Cell_Matrix(12, 0.2, 0.5, Cell_Parms.outCircleViewCycle(0.2, 0.05, [1,1,6,6],[30,300,30,8]));
 
-// dôme
+// dôme (première version)
 a = Cell_Dome([[4,6,8],4], 0.2);
+
+// dôme (version ambisonique)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv(nil); // couper la sortie pour ne pas avoir du b-format en direct
+a = Cell_Matrix([4,4,4], 0.05, 4, ['ambi', 4, [1,0.5,0.25]], outChannels: 16);
+)
+// sortie sur casque
+// démarrer JConvolver d'abord
+
+// de nombreux XRuns en raison des encodeurs HOA (trop nombreux ?)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("jconvolver");
+a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 4, [1,0.5,0.25], true], outChannels: 26);
+)
+
+// FOA
+
+// impossible de faire marcher les décodeurs FOA Kernel, donc pas de sortie sur casque
+// ici, sortie stéreo
+// solution standard, après détour par 'ambdec'
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+a = Cell_Matrix(4!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+)
+// 40% CPU (i5)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+a = Cell_Matrix(5!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+)
+// 70% CPU (i5)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+a = Cell_Matrix(6!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+)
+
+// par contre on doit pouvoir sortir sur un schema standard de periphonie, à voir
+
+// toujours le même problème avec le HOA
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
+a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625]], outChannels: 16);
+)
+
+// --> peut-être un encodage en FOA et un décodage sur une grille de 26 ?
+// ou sinon, sortir directement les 64/125/216 canaux + les paramètres de spatialisation
+// sur un encodeur à N sources (p.ex. créé par AmbiTools)
+
+// YESSAI !!! Ca marche: (avec ambdec en mode stéreo)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
+a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], nil, true], outChannels: 4);
+)
+// grille de 5^3: 50% des ressources
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
+a = Cell_Matrix([5,5,5], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], nil, true], outChannels: 4);
+)
 
 // arrête la simulation
 a.free;
