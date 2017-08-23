@@ -120,7 +120,7 @@ a = Cell_Dome([[4,6,8],4], 0.2);
 // dôme (version ambisonique)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv(nil); // couper la sortie pour ne pas avoir du b-format en direct
-a = Cell_Matrix([4,4,4], 0.05, 4, ['ambi', 4, [1,0.5,0.25]], outChannels: 16);
+a = Cell_Matrix([4,4,4], 0.05, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 3));
 )
 // sortie sur casque
 // démarrer JConvolver d'abord
@@ -128,7 +128,8 @@ a = Cell_Matrix([4,4,4], 0.05, 4, ['ambi', 4, [1,0.5,0.25]], outChannels: 16);
 // de nombreux XRuns en raison des encodeurs HOA (trop nombreux ?)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("jconvolver");
-a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 4, [1,0.5,0.25], true], outChannels: 26);
+a = Cell_Matrix([4,4,4], 0.1, 4,
+	Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\HOA, HOADecLebedev50, 0]));
 )
 
 // FOA
@@ -136,19 +137,21 @@ a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 4, [1,0.5,0.25], true], outChannels: 2
 // impossible de faire marcher les décodeurs FOA Kernel, donc pas de sortie sur casque
 // ici, sortie stéreo
 // solution standard, après détour par 'ambdec'
+
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(4!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
 )
+
 // 40% CPU (i5)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(5!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
 )
 // 70% CPU (i5)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(6!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outChannels: 2);
+a = Cell_Matrix(6!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
 )
 
 // par contre on doit pouvoir sortir sur un schema standard de periphonie, à voir
@@ -156,7 +159,7 @@ a = Cell_Matrix(6!3, 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], true, true], outCh
 // toujours le même problème avec le HOA
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625]], outChannels: 16);
+a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 3));
 )
 
 // --> peut-être un encodage en FOA et un décodage sur une grille de 26 ?
@@ -166,12 +169,12 @@ a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625]], outChannels: 
 // YESSAI !!! Ca marche: (avec ambdec en mode stéreo)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([4,4,4], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], nil, true], outChannels: 4);
+a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1));
 )
-// grille de 5^3: 50% des ressources
+// grille de 5^3: 50% des ressources @i5
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([5,5,5], 0.1, 4, ['ambi', 1, [0.25,0.125,0.0625], nil, true], outChannels: 4);
+a = Cell_Matrix([5,5,5], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1));
 )
 
 // arrête la simulation

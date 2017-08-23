@@ -50,7 +50,7 @@ Si ce nombre est trop elevé, un phénomène de limitation se produit
 et l'espérance du nombre d'effets est en réalité inférieure.
 
 ARGUMENT:: delFixMax
-Temps maximum de retard fixe. 
+Temps maximum de retard fixe.
 
 ARGUMENT:: delAmtMax
 Temps maximum de retard variable, au minimum 2**(-10).
@@ -203,8 +203,8 @@ Si ce tableau est plus court que levels, il sera prolongé par enroulement.
 
 returns:: Un Array formaté pour Cell_FlyPanOut.
 
-METHOD:: outFlyTurtle
-Paramètres pour la sortie Cell_FlyTurtleOut.
+METHOD:: outTurtle
+Paramètres pour la sortie Cell_TurtleOut.
 Cette sortie se déplace horizontalement suivant un schéma polaire,
 et verticalement selon une courbe aléatoire.
 Le pan est fonction de la position et de l'angle.
@@ -221,10 +221,10 @@ Vitesse maximale de progression verticale, en niveaux/seconde.
 Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
 (la vitesse de progression dépend donc de l'altitude courante).
 
-returns:: Un Array formaté pour Cell_FlyTurtleOut.
+returns:: Un Array formaté pour Cell_TurtleOut.
 
-METHOD:: outFlyTurtleCycle
-Paramètres pour la sortie Cell_FlyTurtleOut.
+METHOD:: outTurtleCycle
+Paramètres pour la sortie Cell_TurtleOut.
 Cette sortie se déplace horizontalement suivant un schéma polaire,
 et verticalement selon un cycle programmé.
 Le pan est fonction de la position et de l'angle.
@@ -243,7 +243,53 @@ ARGUMENT:: times
 Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
 Si ce tableau est plus court que levels, il sera prolongé par enroulement.
 
-returns:: Un Array formaté pour Cell_FlyTurtleOut.
+returns:: Un Array formaté pour Cell_TurtleOut.
+
+METHOD:: outAmbi
+Paramètres pour la sortie Cell_AmbiOut.
+Cette sortie se déplace en 3D suivant un schéma polaire,
+avec un facteur zoom variable.
+La grille doit être en 3D.
+La spatialisation est réalisée par Ambisonic.
+
+ARGUMENT:: linSpeed
+Vitesse maximale de progression longitudinale,
+en cellules/seconde.
+
+ARGUMENT:: angSpeed
+Vitesse angulaire maximale, en tours/seconde, sur 3 axes.
+Il s'agit donc d'un Array à 3 éléments: rotation [Z,Y,X].
+
+ARGUMENT:: encoder
+Ordre de l'encodage Ambisonic: 1 ou 3.
+
+ARGUMENT:: decoder
+Array qui spécifie le décodeur (ou nil pour une sortie en B-format).
+Le premier élément est le type: \FOA ou \HOA.
+
+Pour FOA:
+
+- le deuxième élément est la méthode de FoaDecoderMatrix appelée (par exemple \newStereo)
+
+- les éléments suivants sont ses paramètres
+
+Pour HOA:
+
+- le deuxième élément est la classe de décodeur (HOADecLebedev[06/26/50])
+
+- le troisième élément est 1 pour charger les filtres HRIR, 0 sinon
+
+returns:: Un Array formaté pour Cell_AmbiOut.
+
+METHOD:: outMapView
+METHOD:: outCircleView
+
+Comme outTurtle, avec une visualisation carrée ou ronde en plus.
+
+METHOD:: outMapViewCycle
+METHOD:: outCircleViewCycle
+
+Comme outTurtleCycle, avec une visualisation carrée ou ronde en plus.
 
 INSTANCEMETHODS::
 

@@ -73,4 +73,7 @@ Cell_Parms : Array {
 		^super.with('circleview', linSpeed, angSpeed, [levels, times]);
 	}
 
+	*outAmbi{|linSpeed, angSpeed, encoder, decoder|
+		^super.with('ambi', linSpeed, angSpeed, encoder, decoder);
+	}
 }

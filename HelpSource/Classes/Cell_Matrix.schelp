@@ -14,7 +14,13 @@ METHOD:: new
 Crée et démarre une instance de Cell_Matrix.
 
 ARGUMENT:: size
-Taille de la grille (carré de size*size)
+Taille de la grille:
+
+- carré de size*size si c'est un nombre
+
+- grille à N dimensions si c'est une séquence de N nombres
+
+A part pour le module de sortie Cell_AmbiOut (3D), les modules ne supportent que les grilles 2D.
 
 ARGUMENT:: volume
 Gain global sur [0,1]

@@ -89,43 +89,10 @@ Cell_Matrix {
 
 		// création du fil d'exécution
 		thread = Routine({
-
-			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
-			if((Server.default.options.numAudioBusChannels < 2048) ||
-				(Server.default.options.memSize < (128 * 1024)) ||
-				(Server.default.options.maxNodes < 2048) ||
-				(Server.program == "exec scsynth")) {
-				Server.default.quit;
-				// !! Ne fonctionne pas avec HOAEncoder !!
-				Server.supernova;
-				Server.default.options.maxNodes = 2048;
-				Server.default.options.numAudioBusChannels = 2048;
-				Server.default.options.memSize = 128 * 1024;
-			};
-
-			if(Server.default.options.numOutputBusChannels < numOutChannels)
-			{
-				Server.default.quit;
-				Server.default.options.numOutputBusChannels = numOutChannels;
-			};
-			// démarrer le serveur et attendre la synchro
-			Server.default.bootSync;
-
 			// ajouter les définitions de modules (générateur, chaîne d'effets, modulateurs)
 			Cell_Gen.addDefs(genParms);
 			Cell_Pipe.addDefs(pipeParms);
 			Cell_Mod.addDefs(modParms);
-
-			// ajouter le fade in/out global
-			SynthDef('globalGate', {|out, in, gate = 1|
-				Out.ar(out,
-					// enveloppe dynamique:
-					// attaque: 5s, chute: 5s, entretien: 100%;
-					// continue jusqu'à ce que gate devienne 0
-					// arrête le groupe tout entier à la fin
-					EnvGen.kr(Env.asr(5, 1, 5, 'lin'), gate, doneAction: 2) *
-					In.ar(in, numOutChannels));
-			}).add;
 
 			// suivant le type de sortie choisie, ajouter les définitions correspondantes
 			switch(outParms[0],
@@ -154,12 +121,46 @@ Cell_Matrix {
 					if(outParms[3].isSequenceableCollection, {outParms[3]}, {nil}));
 					viewMap = Array.fillND(gridSize, { nil });
 				},
-				'ambi', { Cell_AmbiOut.addDefs(
-					// TODO: paramètres à spécifier
+				'ambi', { numOutChannels = Cell_AmbiOut.addDefs(
+					*outParms[3..]
 				)}
 			);
+
+			// ajouter le fade in/out global
+			SynthDef('globalGate', {|out, in, gate = 1|
+				Out.ar(out,
+					// enveloppe dynamique:
+					// attaque: 5s, chute: 5s, entretien: 100%;
+					// continue jusqu'à ce que gate devienne 0
+					// arrête le groupe tout entier à la fin
+					EnvGen.kr(Env.asr(5, 1, 5, 'lin'), gate, doneAction: 2) *
+					In.ar(in, numOutChannels));
+			}).add;
+
+			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
+			if((Server.default.options.numAudioBusChannels < 2048) ||
+				(Server.default.options.memSize < (128 * 1024)) ||
+				(Server.default.options.maxNodes < 2048) ||
+				(Server.program == "exec scsynth")) {
+				Server.default.quit;
+				// !! Ne fonctionne pas avec HOAEncoder !!
+				// --> commenter pour l'utiliser
+				Server.supernova;
+				Server.default.options.maxNodes = 2048;
+				Server.default.options.numAudioBusChannels = 2048;
+				Server.default.options.memSize = 128 * 1024;
+			};
+
+			if(Server.default.options.numOutputBusChannels < numOutChannels)
+			{
+				Server.default.quit;
+				Server.default.options.numOutputBusChannels = numOutChannels;
+			};
+			// démarrer le serveur et attendre la synchro
+			Server.default.bootSync;
+
 			// attendre la synchro après ajout des définitions
-			Server.default.sync;
+			// Server.default.sync;
 
 			// dans le cas où on demande l'enregistrement
 			if (rec.notNil, {
@@ -198,7 +199,8 @@ Cell_Matrix {
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
 				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume,
-					outParms[1], outParms[2], outParms[3], outParms[4]
+					*outParms[1..]
+					// outParms[1], outParms[2], outParms[3], outParms[4]
 				)}
 			);
 
