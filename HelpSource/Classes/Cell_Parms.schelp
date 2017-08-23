@@ -117,7 +117,7 @@ METHOD:: outSum
 Paramètres pour la sortie de base, Cell_SumOut.
 Cette sortie fait simplement la somme des cellules.
 
-returns:: Un Array formaté pour Cell_Matrix.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outWalk
 Paramètres pour la sortie Cell_WalkOut.
@@ -129,7 +129,7 @@ ARGUMENT:: speed
 Vitesse maximale de progression horizontale, en cellules/seconde.
 Les deux dimensions sont traitées indépendamment.
 
-returns:: Un Array formaté pour Cell_WalkOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outFly
 Paramètres pour la sortie Cell_FlyOut.
@@ -146,7 +146,7 @@ Vitesse maximale de progression verticale, en niveaux/seconde.
 Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
 (la vitesse de progression dépend donc de l'altitude courante).
 
-returns:: Un Array formaté pour Cell_FlyOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outFlyCycle
 Paramètres pour la sortie Cell_FlyOut.
@@ -165,7 +165,7 @@ ARGUMENT:: times
 Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
 Si ce tableau est plus court que levels, il sera prolongé par enroulement.
 
-returns:: Un Array formaté pour Cell_FlyOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outFlyPan
 Paramètres pour la sortie Cell_FlyPanOut.
@@ -182,7 +182,7 @@ Vitesse maximale de progression verticale, en niveaux/seconde.
 Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
 (la vitesse de progression dépend donc de l'altitude courante).
 
-returns:: Un Array formaté pour Cell_FlyPanOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outFlyPanCycle
 Paramètres pour la sortie Cell_FlyPanOut.
@@ -201,7 +201,7 @@ ARGUMENT:: times
 Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
 Si ce tableau est plus court que levels, il sera prolongé par enroulement.
 
-returns:: Un Array formaté pour Cell_FlyPanOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outTurtle
 Paramètres pour la sortie Cell_TurtleOut.
@@ -221,7 +221,7 @@ Vitesse maximale de progression verticale, en niveaux/seconde.
 Quantité approximative car l'altitude est en fait donnée par une fonction sinusoïdale
 (la vitesse de progression dépend donc de l'altitude courante).
 
-returns:: Un Array formaté pour Cell_TurtleOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outTurtleCycle
 Paramètres pour la sortie Cell_TurtleOut.
@@ -243,7 +243,7 @@ ARGUMENT:: times
 Un Array qui donne les intervalles de temps entre chaque point du cycle et le suivant.
 Si ce tableau est plus court que levels, il sera prolongé par enroulement.
 
-returns:: Un Array formaté pour Cell_TurtleOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outAmbi
 Paramètres pour la sortie Cell_AmbiOut.
@@ -279,7 +279,7 @@ Pour HOA:
 
 - le troisième élément est 1 pour charger les filtres HRIR, 0 sinon
 
-returns:: Un Array formaté pour Cell_AmbiOut.
+returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
 METHOD:: outMapView
 METHOD:: outCircleView
