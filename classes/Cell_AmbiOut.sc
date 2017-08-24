@@ -71,6 +71,14 @@ Cell_AmbiOut {
 						numOutChannels = 16;
 						HOAEncoder.ar(3, In.ar(in) * vol, theta, phi, gain.ampdb)
 					}
+					{\amb_ladspa2} {
+						numOutChannels = 9;
+						LADSPA.ar(16, 1967, In.ar(in) * vol, phi * (180/1pi), theta * (180/1pi));
+					}
+					{\amb_ladspa3} {
+						numOutChannels = 16;
+						LADSPA.ar(16, 1965, In.ar(in) * vol, phi * (180/1pi), theta * (180/1pi));
+					}
 				);
 			}),
 
@@ -124,6 +132,12 @@ Cell_AmbiOut {
 			// décodeur AmbiSonic (global)
 			// créer le décodeur demandé
 			SynthDef('cellAmbiDec', {|out = 0, in, vol|
+				var order = switch (encoder)
+				{1} {1}
+				{3} {3}
+				{\amb_ladspa2} {2}
+				{\amb_ladspa3} {3};
+
 				Out.ar(out,
 					case
 					// pas de décodeur
@@ -131,7 +145,7 @@ Cell_AmbiOut {
 					// décodeur HOA, avec ou sans filtres HRIR
 					{decoder.first == \HOA}
 					{
-						var elt = decoder[1].ar(encoder, In.ar(in, (encoder+1).squared),
+						var elt = decoder[1].ar(order, In.ar(in, numOutChannels),
 							output_gains: vol.ampdb, hrir_Filters: decoder[2]);
 						numOutChannels = elt.size;
 						elt;
@@ -176,6 +190,13 @@ Cell_AmbiOut {
 
 		// sortie configurable
 		var outBus = gateBus;
+
+		var numOutChannels = switch (encoder)
+		{1} {4}
+		{3} {16}
+		{\amb_ladspa2} {9}
+		{\amb_ladspa3} {16};
+
 		// créer les Bus
 		posBus = Bus.control(numChannels: 3).setSynchronous(*[0,0,0]);
 		rotBus = Bus.control(numChannels: 9).setSynchronous(*[1,0,0,0,1,0,0,0,1]);
@@ -184,7 +205,7 @@ Cell_AmbiOut {
 		// créer le décodeur si nécessaire
 		if (decoder.notNil)
 		{
-			decBus = Bus.audio(numChannels: (encoder+1)**2);
+			decBus = Bus.audio(numChannels: numOutChannels);
 			decoderSynth = Synth('cellAmbiDec', [out: gateBus, in: decBus, vol: volume]);
 			outBus = decBus;
 		};

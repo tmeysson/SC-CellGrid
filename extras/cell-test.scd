@@ -156,6 +156,16 @@ a = Cell_Matrix(6!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA
 
 // par contre on doit pouvoir sortir sur un schema standard de periphonie, à voir
 
+// sortie vers le décodeur binaural ambitools
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil));
+)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
+a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil));
+)
+
 // toujours le même problème avec le HOA
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
