@@ -20,7 +20,7 @@ Cell_AmbiOut {
 				var u1, u2, v1, v2, w1, w2;
 				// détermination de la variation
 				// possibilité de remplacer par des contrôles GamePad
-				# alpha, beta, gamma = LFNoise1.kr(1) * angspeed * prd * 1pi;
+				# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
 				speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
 				zm = (LFNoise1.kr(1/60, 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
 				// lecture des vecteurs
