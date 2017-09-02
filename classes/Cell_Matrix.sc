@@ -122,7 +122,7 @@ Cell_Matrix {
 					viewMap = Array.fillND(gridSize, { nil });
 				},
 				'ambi', { numOutChannels = Cell_AmbiOut.addDefs(
-					*outParms[3..]
+					*outParms[2..]
 				)}
 			);
 
@@ -141,21 +141,23 @@ Cell_Matrix {
 			if((Server.default.options.numAudioBusChannels < 2048) ||
 				(Server.default.options.memSize < (128 * 1024)) ||
 				(Server.default.options.maxNodes < 2048) ||
-				(Server.program == "exec scsynth")) {
+				(Server.program == "exec scsynth") ||
+				(Server.default.options.numOutputBusChannels < numOutChannels)) {
 				Server.default.quit;
 				// !! Ne fonctionne pas avec HOAEncoder !!
 				// --> commenter pour l'utiliser
 				Server.supernova;
+				Server.default.options.numOutputBusChannels = numOutChannels;
 				Server.default.options.maxNodes = 2048;
 				Server.default.options.numAudioBusChannels = 2048;
 				Server.default.options.memSize = 128 * 1024;
 			};
 
-			if(Server.default.options.numOutputBusChannels < numOutChannels)
-			{
-				Server.default.quit;
-				Server.default.options.numOutputBusChannels = numOutChannels;
-			};
+			// if(Server.default.options.numOutputBusChannels < numOutChannels)
+			// {
+			// 	Server.default.quit;
+			// 	Server.default.options.numOutputBusChannels = numOutChannels;
+			// };
 			// démarrer le serveur et attendre la synchro
 			Server.default.bootSync;
 
@@ -198,10 +200,7 @@ Cell_Matrix {
 					outParms[1], outParms[2], outParms[3])},
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume,
-					*outParms[1..]
-					// outParms[1], outParms[2], outParms[3], outParms[4]
-				)}
+				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume, *outParms[1..])}
 			);
 
 			// créer un groupe parallèle pour les cellules

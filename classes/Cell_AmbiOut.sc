@@ -7,7 +7,7 @@ Cell_AmbiOut {
 	var debug;
 	var posBus, rotBus, zoomBus, posGen;
 
-	*addDefs {|encoder = 1, decoder|
+	*addDefs {|encoder, decoder|
 		var numOutChannels;
 
 		defs = [
@@ -63,19 +63,19 @@ Cell_AmbiOut {
 				// encodage AmbiSonic
 				Out.ar(out,
 					switch (encoder)
-					{1} {
+					{'foa'} {
 						numOutChannels = 4;
 						PanB.ar(In.ar(in) * vol, theta, phi, gain)
 					}
-					{3} {
+					{'hoa'} {
 						numOutChannels = 16;
 						HOAEncoder.ar(3, In.ar(in) * vol, theta, phi, gain.ampdb)
 					}
-					{\amb_ladspa2} {
+					{'amb_ladspa2'} {
 						numOutChannels = 9;
 						LADSPA.ar(16, 1967, In.ar(in) * vol, phi * (180/1pi), theta * (180/1pi));
 					}
-					{\amb_ladspa3} {
+					{'amb_ladspa3'} {
 						numOutChannels = 16;
 						LADSPA.ar(16, 1965, In.ar(in) * vol, phi * (180/1pi), theta * (180/1pi));
 					}
@@ -133,17 +133,17 @@ Cell_AmbiOut {
 			// créer le décodeur demandé
 			SynthDef('cellAmbiDec', {|out = 0, in, vol|
 				var order = switch (encoder)
-				{1} {1}
-				{3} {3}
-				{\amb_ladspa2} {2}
-				{\amb_ladspa3} {3};
+				{'foa'} {1}
+				{'hoa'} {3}
+				{'amb_ladspa2'} {2}
+				{'amb_ladspa3'} {3};
 
 				Out.ar(out,
 					case
 					// pas de décodeur
 					{decoder.isNil} {Silent.ar}
 					// décodeur HOA, avec ou sans filtres HRIR
-					{decoder.first == \HOA}
+					{decoder.first == 'hoa'}
 					{
 						var elt = decoder[1].ar(order, In.ar(in, numOutChannels),
 							output_gains: vol.ampdb, hrir_Filters: decoder[2]);
@@ -151,11 +151,11 @@ Cell_AmbiOut {
 						elt;
 					}
 					// décodeur FOA, méthode et paramètres au choix
-					{decoder.first == \FOA}
+					{decoder.first == 'foa'}
 					{
 						var elt = FoaDecode.ar(In.ar(in,4),
 							FoaDecoderMatrix.performList(decoder[1], decoder[2..]));
-						numOutChannels = elt.size;
+						numOutChannels = elt.size.postln;
 						elt;
 					}
 				);
@@ -178,11 +178,12 @@ Cell_AmbiOut {
 		^numOutChannels;
 	}
 
-	*new {|gateBus, busses, volume, linspeed = 1, angspeed = #[1,1,1], encoder = 1, decoder|
-		^super.new.ambiOutInit(gateBus, busses, volume, linspeed, angspeed, encoder, decoder);
+	*new {|gateBus, busses, volume, speed, encoder, decoder|
+		^super.new.ambiOutInit(gateBus, busses, volume, speed, encoder, decoder);
 	}
 
-	ambiOutInit {|gateBus, busses, volume, linspeed, angspeed, encoder, decoder|
+	ambiOutInit {|gateBus, busses, volume, speed, encoder, decoder|
+		var linspeed, angspeed;
 		// taille de la grille
 		var sizeX = busses.size;
 		var sizeY = busses.first.size;
@@ -192,10 +193,12 @@ Cell_AmbiOut {
 		var outBus = gateBus;
 
 		var numOutChannels = switch (encoder)
-		{1} {4}
-		{3} {16}
-		{\amb_ladspa2} {9}
-		{\amb_ladspa3} {16};
+		{'foa'} {4}
+		{'hoa'} {16}
+		{'amb_ladspa2'} {9}
+		{'amb_ladspa3'} {16};
+
+		# linspeed, angspeed = speed;
 
 		// créer les Bus
 		posBus = Bus.control(numChannels: 3).setSynchronous(*[0,0,0]);

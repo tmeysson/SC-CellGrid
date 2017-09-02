@@ -73,7 +73,15 @@ Cell_Parms : Array {
 		^super.with('circleview', linSpeed, angSpeed, [levels, times]);
 	}
 
-	*outAmbi{|linSpeed, angSpeed, encoder, decoder|
-		^super.with('ambi', linSpeed, angSpeed, encoder, decoder);
+	*outAmbi{|linSpeed = 1, zAngSpeed = 0.5, yAngSpeed = 0.25, xAngSpeed = 0.125,
+		encoder = 'foa', decoder = nil|
+		^super.with('ambi', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], encoder,
+			switch (decoder)
+			{nil} {nil}
+			{'stereo'} {['foa', 'newStereo']}
+			{'hoa'} {['hoa', HOADecLebedev26, 0]}
+			{'jconvolver'} {['hoa', HOADecLebedev50, 0]}
+			{'binaural'} {['hoa', HOADecLebedev50, 1]}
+		);
 	}
 }

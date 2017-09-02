@@ -120,17 +120,21 @@ a = Cell_Dome([[4,6,8],4], 0.2);
 // dôme (version ambisonique)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv(nil); // couper la sortie pour ne pas avoir du b-format en direct
-a = Cell_Matrix([4,4,4], 0.05, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 3));
+a = Cell_Matrix([4,4,4], 0.05, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'hoa'));
 )
+
 // sortie sur casque
 // démarrer JConvolver d'abord
 
-// de nombreux XRuns en raison des encodeurs HOA (trop nombreux ?)
+// de nombreux XRuns si on utilise des encodeurs HOA (trop nombreux ?)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("jconvolver");
 a = Cell_Matrix([4,4,4], 0.1, 4,
-	Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\HOA, HOADecLebedev50, 0]));
+	Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa', 'jconvolver'));
 )
+
+// arrête la simulation
+a.free;
 
 // FOA
 
@@ -140,61 +144,66 @@ a = Cell_Matrix([4,4,4], 0.1, 4,
 
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa', 'stereo'));
 )
 
 // 40% CPU (i5)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
+a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa', 'stereo'));
 )
 // 70% CPU (i5)
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-a = Cell_Matrix(6!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, [\FOA, \newStereo]));
+a = Cell_Matrix(6!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa', 'stereo'));
 )
+
+// arrête la simulation
+a.free;
 
 // par contre on doit pouvoir sortir sur un schema standard de periphonie, à voir
 
 // sortie vers le décodeur binaural ambitools
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
-a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil));
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa'));
 )
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
-a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil));
+a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa'));
 )
+
+// arrête la simulation
+a.free;
 
 // en utilisant l'encodeur d'ordre 3 de AMB-LADSPA
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
-a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], \amb_ladspa2, nil));
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'amb_ladspa2'));
 )
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
-a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], \amb_ladspa3, nil));
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'amb_ladspa3'));
 )
 
 // toujours le même problème avec le HOA
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 3));
+a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'hoa'));
 )
 
-// --> peut-être un encodage en FOA et un décodage sur une grille de 26 ?
-// ou sinon, sortir directement les 64/125/216 canaux + les paramètres de spatialisation
+// --> peut-être sortir directement les 64/125/216 canaux + les paramètres de spatialisation
 // sur un encodeur à N sources (p.ex. créé par AmbiTools)
 
-// YESSAI !!! Ca marche: (avec ambdec en mode stéreo)
+// avec ambdec, en mode stéreo p.ex.
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1));
+a = Cell_Matrix([4,4,4], 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa'));
 )
 // grille de 5^3: 50% des ressources @i5
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
-a = Cell_Matrix([5,5,5], 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1));
+a = Cell_Matrix([5,5,5], 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa'));
 )
 
 // arrête la simulation

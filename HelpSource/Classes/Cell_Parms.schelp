@@ -256,28 +256,32 @@ ARGUMENT:: linSpeed
 Vitesse maximale de progression longitudinale,
 en cellules/seconde.
 
-ARGUMENT:: angSpeed
-Vitesse angulaire maximale, en tours/seconde, sur 3 axes.
-Il s'agit donc d'un Array à 3 éléments: rotation [Z,Y,X].
+ARGUMENT:: zAngSpeed
+ARGUMENT:: yAngSpeed
+ARGUMENT:: xAngSpeed
+Vitesse angulaire maximale, en tours/seconde, sur 3 axes (vertical, latéral, longitudinal).
 
 ARGUMENT:: encoder
-Ordre de l'encodage Ambisonic: 1 ou 3.
+Type d'encodage Ambisonic:
+
+- 'foa': encodage au premier ordre
+
+- 'hoa': encodage au troisième ordre avec le plugin HOA
+
+- 'amb_ladspa2'/'amb_ladspa3': encodage à l'ordre 2 ou 3 avec les plugins AMB-LADSPA
 
 ARGUMENT:: decoder
-Array qui spécifie le décodeur (ou nil pour une sortie en B-format).
-Le premier élément est le type: \FOA ou \HOA.
+Spécification du décodeur:
 
-Pour FOA:
+- nil: sortie en B-format
 
-- le deuxième élément est la méthode de FoaDecoderMatrix appelée (par exemple \newStereo)
+- 'stereo': sortie stéreo avec le plugin FOA
 
-- les éléments suivants sont ses paramètres
+- 'hoa': sortie en grille de Lebedev à 26 noeuds (ordre 3)
 
-Pour HOA:
+- 'jconvolver': sortie à 50 noeuds (pour branchement sur jconvolver)
 
-- le deuxième élément est la classe de décodeur (HOADecLebedev[06/26/50])
-
-- le troisième élément est 1 pour charger les filtres HRIR, 0 sinon
+- 'binaural': sortie binaurale avec les filtres HRIR (ne fonctionne pas actuellement)
 
 returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
