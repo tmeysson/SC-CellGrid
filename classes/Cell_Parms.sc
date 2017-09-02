@@ -75,7 +75,19 @@ Cell_Parms : Array {
 
 	*outAmbi{|linSpeed = 1, zAngSpeed = 0.5, yAngSpeed = 0.25, xAngSpeed = 0.125,
 		encoder = 'foa', decoder = nil|
-		^super.with('ambi', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], encoder,
+		^super.with('ambi', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], nil, encoder,
+			switch (decoder)
+			{nil} {nil}
+			{'stereo'} {['foa', 'newStereo']}
+			{'hoa'} {['hoa', HOADecLebedev26, 0]}
+			{'jconvolver'} {['hoa', HOADecLebedev50, 0]}
+			{'binaural'} {['hoa', HOADecLebedev50, 1]}
+		);
+	}
+
+	*outAmbiJoy{|linSpeed = 1, zAngSpeed = 0.5, yAngSpeed = 0.25, xAngSpeed = 0.125,
+		joyspec, encoder = 'foa', decoder = nil|
+		^super.with('ambi', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], joyspec, encoder,
 			switch (decoder)
 			{nil} {nil}
 			{'stereo'} {['foa', 'newStereo']}

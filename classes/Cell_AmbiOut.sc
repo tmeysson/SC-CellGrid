@@ -6,8 +6,9 @@ Cell_AmbiOut {
 	var decoderSynth, decBus;
 	var debug;
 	var posBus, rotBus, zoomBus, posGen;
+	var joystick;
 
-	*addDefs {|encoder, decoder|
+	*addDefs {|joyspec, encoder, decoder|
 		var numOutChannels;
 
 		defs = [
@@ -20,9 +21,16 @@ Cell_AmbiOut {
 				var u1, u2, v1, v2, w1, w2;
 				// détermination de la variation
 				// possibilité de remplacer par des contrôles GamePad
-				# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
-				speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
-				zm = (LFNoise1.kr(1/60, 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
+				if (joyspec.isNil) {
+					# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
+					speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
+					zm = (LFNoise1.kr(1/60, 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
+				} {
+					# alpha, beta, gamma = ['zrot', 'yrot', 'xrot'].collect {|symb| In.kr(symb.ir)}
+					* angspeed * prd * 1pi;
+					speed = In.kr('speed'.ir) * linspeed * prd;
+					zm = (MulAdd(In.kr('zoomin'.ir), 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
+				};
 				// lecture des vecteurs
 				# u, v, w = In.kr(rot, 9).reshape(3,3);
 				p = In.kr(pos, 3);
@@ -54,7 +62,7 @@ Cell_AmbiOut {
 				# x, y, z = ((rp!3) * In.kr(rot, 9).reshape(3,3)).collect(_.sum);
 				// calcul du gain
 				d = [x,y,z].squared.sum.sqrt;
-				gain = max(0, (zm - d)) / zm;
+				gain = max(0, (zm - d)) / (zm ** 2);
 				// normalisation
 				# x, y, z = [x,y,z] / d;
 				// calcul des coordonnées polaires
@@ -155,7 +163,7 @@ Cell_AmbiOut {
 					{
 						var elt = FoaDecode.ar(In.ar(in,4),
 							FoaDecoderMatrix.performList(decoder[1], decoder[2..]));
-						numOutChannels = elt.size.postln;
+						numOutChannels = elt.size;
 						elt;
 					}
 				);
@@ -175,14 +183,16 @@ Cell_AmbiOut {
 
 		defs.do({|item| item.add });
 
+		if (joyspec.notNil) {Cell_Joystick.addDefs};
+
 		^numOutChannels;
 	}
 
-	*new {|gateBus, busses, volume, speed, encoder, decoder|
-		^super.new.ambiOutInit(gateBus, busses, volume, speed, encoder, decoder);
+	*new {|gateBus, busses, volume, speed, joyspec, encoder, decoder|
+		^super.new.ambiOutInit(gateBus, busses, volume, speed, joyspec, encoder, decoder);
 	}
 
-	ambiOutInit {|gateBus, busses, volume, speed, encoder, decoder|
+	ambiOutInit {|gateBus, busses, volume, speed, joyspec, encoder, decoder|
 		var linspeed, angspeed;
 		// taille de la grille
 		var sizeX = busses.size;
@@ -259,8 +269,18 @@ Cell_AmbiOut {
 		// };
 
 		// créer le générateur de position
-		posGen = Synth('ambi-posGen', [pos: posBus, rot: rotBus, zoom: zoomBus,
-		size: [sizeX, sizeY, sizeZ], linspeed: linspeed, angspeed: angspeed]);
+		if (joyspec.isNil) {
+			posGen = Synth('ambi-posGen', [pos: posBus, rot: rotBus, zoom: zoomBus,
+				size: [sizeX, sizeY, sizeZ], linspeed: linspeed, angspeed: angspeed]);
+		} {
+			var joyBusses;
+			joystick = Cell_Joystick(joyspec);
+			joyBusses = joystick.busses;
+			posGen = Synth('ambi-posGen', [pos: posBus, rot: rotBus, zoom: zoomBus,
+				size: [sizeX, sizeY, sizeZ], linspeed: linspeed, angspeed: angspeed,
+				speed: joyBusses[0], zrot: joyBusses[1], yrot: joyBusses[2],
+				xrot: joyBusses[3], zoomin: joyBusses[4]]);
+		};
 	}
 
 	free {
@@ -268,6 +288,7 @@ Cell_AmbiOut {
 		encoders.flat.do(_.free);
 		posGen.free;
 		posBus.free; rotBus.free; zoomBus.free; decBus.free;
+		joystick.free;
 		^super.free;
 	}
 }
