@@ -79,6 +79,7 @@ Cell_Parms : Array {
 			switch (decoder)
 			{nil} {nil}
 			{'stereo'} {['foa', 'newStereo']}
+			{'quad'} {['foa', 'newQuad']}
 			{'hoa'} {['hoa', HOADecLebedev26, 0]}
 			{'jconvolver'} {['hoa', HOADecLebedev50, 0]}
 			{'binaural'} {['hoa', HOADecLebedev50, 1]}
@@ -91,6 +92,7 @@ Cell_Parms : Array {
 			switch (decoder)
 			{nil} {nil}
 			{'stereo'} {['foa', 'newStereo']}
+			{'quad'} {['foa', 'newQuad']}
 			{'hoa'} {['hoa', HOADecLebedev26, 0]}
 			{'jconvolver'} {['hoa', HOADecLebedev50, 0]}
 			{'binaural'} {['hoa', HOADecLebedev50, 1]}
