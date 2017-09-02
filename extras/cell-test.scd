@@ -166,6 +166,16 @@ a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil))
 a = Cell_Matrix(5!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], 1, nil));
 )
 
+// en utilisant l'encodeur d'ordre 3 de AMB-LADSPA
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], \amb_ladspa2, nil));
+)
+(
+"SC_JACK_DEFAULT_OUTPUTS".setenv("hoa_decoder_lebedev50_binaural");
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outAmbi(1, [0.25,0.125,0.0625], \amb_ladspa3, nil));
+)
+
 // toujours le même problème avec le HOA
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("ambdec");
