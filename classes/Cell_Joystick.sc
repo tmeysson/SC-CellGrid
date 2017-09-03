@@ -8,10 +8,10 @@ Cell_Joystick {
 	*addDefs {
 		defs = [
 			SynthDef('joystick_axispos', {|out, in|
-				Out.kr(out, MulAdd(In.kr(in), 2, -1))
+				Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01))
 			}),
 			SynthDef('joystick_axisneg', {|out, in|
-				Out.kr(out, MulAdd(In.kr(in), -2, 1))
+				Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01))
 			}),
 			SynthDef('joystick_diff', {|out, pos, neg|
 				Out.kr(out, In.kr(pos) - In.kr(neg))

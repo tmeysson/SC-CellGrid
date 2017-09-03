@@ -28,7 +28,7 @@ Cell_AmbiOut {
 				} {
 					# alpha, beta, gamma = ['zrot', 'yrot', 'xrot'].collect {|symb| In.kr(symb.ir)}
 					* angspeed * prd * 1pi;
-					speed = In.kr('speed'.ir) * linspeed * prd;
+					speed = In.kr('spd'.ir) * linspeed * prd;
 					zm = (MulAdd(In.kr('zoomin'.ir), 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
 				};
 				// lecture des vecteurs
@@ -278,7 +278,7 @@ Cell_AmbiOut {
 			joyBusses = joystick.busses;
 			posGen = Synth('ambi-posGen', [pos: posBus, rot: rotBus, zoom: zoomBus,
 				size: [sizeX, sizeY, sizeZ], linspeed: linspeed, angspeed: angspeed,
-				speed: joyBusses[0], zrot: joyBusses[1], yrot: joyBusses[2],
+				spd: joyBusses[0], zrot: joyBusses[1], yrot: joyBusses[2],
 				xrot: joyBusses[3], zoomin: joyBusses[4]]);
 		};
 	}
