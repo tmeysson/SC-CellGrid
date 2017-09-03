@@ -69,19 +69,19 @@ Cell_Matrix {
 	*/
 	*new {|size = 2, volume = 0, renewalTime = 4,
 		outParms = #['sum'], genParms, pipeParms, modParms,
-		rec, stopAfter, outChannels|
+		rec, stopAfter, useNova = true|
 		^super.new.init(size, volume, renewalTime,
 			outParms, genParms, pipeParms, modParms,
-			rec, stopAfter, outChannels);
+			rec, stopAfter, useNova);
 	}
 
-	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter, outChannels|
+	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter, useNova|
 		// nombre de sorties, suivant les sorties système
 		// ou bien le nombre spécifié (pour les installations type dôme)
-		var numOutChannels = outChannels ?? {
-			if("jack_lsp|grep system:playback|wc -l".unixCmdGetStdOut.asInteger >= 4)
-			{ 4 } { 2 };
-		};
+		var numOutChannels =
+		if("jack_lsp|grep system:playback|wc -l".unixCmdGetStdOut.asInteger >= 4)
+		{ 4 } { 2 };
+
 		// initialisation de la taille de la grille
 		gridSize = size;
 		// gestion simple des tailles en 2D
@@ -141,12 +141,12 @@ Cell_Matrix {
 			if((Server.default.options.numAudioBusChannels < 2048) ||
 				(Server.default.options.memSize < (128 * 1024)) ||
 				(Server.default.options.maxNodes < 2048) ||
-				(Server.program == "exec scsynth") ||
+				(useNova && (Server.program == "exec scsynth")) ||
 				(Server.default.options.numOutputBusChannels < numOutChannels)) {
 				Server.default.quit;
 				// !! Ne fonctionne pas avec HOAEncoder !!
-				// --> commenter pour l'utiliser
-				Server.supernova;
+				// utiliser useNova = false
+				if (useNova) {Server.supernova};
 				Server.default.options.numOutputBusChannels = numOutChannels;
 				Server.default.options.maxNodes = 2048;
 				Server.default.options.numAudioBusChannels = 2048;
