@@ -20,7 +20,21 @@ Cell_Joystick {
 				var pulse = Impulse.kr(100);
 				var summer = Summer.kr(pulse * In.kr(pos), 0.01) - Summer.kr(pulse * In.kr(neg), 0.01);
 				Out.kr(out, summer.clip2);
-			})
+			}),
+			SynthDef('joystick_counter', {|out, pos, neg|
+				var plus = In.kr(pos);
+				var minus = In.kr(neg);
+				var l1 = SetResetFF.kr(plus, minus);
+				var dl1 = DelayN.kr(l1, 0.2, 0.2);
+				var l2 = SetResetFF.kr(plus-1+dl1, minus-dl1);
+				var dl2 = DelayN.kr(l1+l2, 0.2, 0.2);
+				var l3 =  SetResetFF.kr(plus-2+dl2,
+					minus-dl2);
+				var dl3 = DelayN.kr(l1+l2+l3, 0.2, 0.2);
+				var l4 =  SetResetFF.kr(plus-3+dl3,
+					minus-dl3);
+				Out.kr(out, (((l1+l2+l3+l4)/2)-1).lag(0.5));
+			}),
 		];
 
 		defs.do(_.add);
@@ -104,9 +118,23 @@ Cell_Joystick {
 				synth = Synth('joystick_summer', [out: out, pos: slot1.bus, neg: slot2.bus]);
 				synths.add(synth);
 				out;
+			}
+			{'counter'} {
+				var ind1, ind2;
+				var slot1, slot2;
+				var out, synth;
+				# ind1, ind2 = index;
+				slot1 = device.slots[ind1[0]][ind1[1]];
+				slot2 = device.slots[ind2[0]][ind2[1]];
+				slots.add(slot1); slots.add(slot2);
+				slot1.createBus; slot2.createBus;
+				out = Bus.control;
+				outBusses.add(out);
+				synth = Synth('joystick_counter', [out: out, pos: slot1.bus, neg: slot2.bus]);
+				synths.add(synth);
+				out;
 			};
-		}
-		/* {Bus.control} ! 5 */;
+		};
 	}
 
 	free {

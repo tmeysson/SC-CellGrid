@@ -214,6 +214,6 @@ a.free;
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
 a = Cell_Matrix(4!3, 0.25, 4, Cell_Parms.outAmbiJoy(1, 0.25, 0.125, 0.0625,
 	[['axisn', [3,5]], ['axisn', [3,0]], ['axisp', [3,1]],
-		['diff', [[1, 293],[1, 292]]], ['summer', [[1, 295], [1,294]]]],
+		['diff', [[1, 293],[1, 292]]], ['counter', [[1, 295], [1,294]]]],
 	'foa', 'stereo'));
 )
