@@ -24,12 +24,12 @@ Cell_AmbiOut {
 				if (joyspec.isNil) {
 					# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
 					speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
-					zm = (LFNoise1.kr(1/60, 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
+					zm = (LFNoise1.kr(1/60, 0.25, 0.25) * (size.reduce('min') - 2)) + 1;
 				} {
 					# alpha, beta, gamma = ['zrot', 'yrot', 'xrot'].collect {|symb| In.kr(symb.ir)}
 					* angspeed * prd * 1pi;
 					speed = In.kr('spd'.ir) * linspeed * prd;
-					zm = (MulAdd(In.kr('zoomin'.ir), 0.5, 0.5) * (size.reduce('min')/*/2*/ - 1)) + 1;
+					zm = (MulAdd(In.kr('zoomin'.ir), 0.25, 0.25) * (size.reduce('min') - 2)) + 1;
 				};
 				// lecture des vecteurs
 				# u, v, w = In.kr(rot, 9).reshape(3,3);
