@@ -98,4 +98,8 @@ Cell_Parms : Array {
 			{'binaural'} {['hoa', HOADecLebedev50, 1]}
 		);
 	}
+
+	*joySpec{|... specs|
+		^super.with(specs);
+	}
 }

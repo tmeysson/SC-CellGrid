@@ -285,6 +285,25 @@ Spécification du décodeur:
 
 returns:: Un Array formaté pour le paramètre outParms de Cell_Matrix.
 
+METHOD:: outAmbiJoy
+
+Comme outAmbi, mais permet de contrôler la position au moyen d'une manette de jeu.
+
+ARGUMENT:: joyspec
+Une spécification de manette de jeu à 5 contrôles:
+
+- vitesse logitudinale
+
+- rotation verticale
+
+- rotation latérale
+
+- rotation longitudinale
+
+- zoom
+
+Voir méthode *joySpec pour savoir comment créer des spécifications.
+
 METHOD:: outMapView
 METHOD:: outCircleView
 
@@ -294,6 +313,27 @@ METHOD:: outMapViewCycle
 METHOD:: outCircleViewCycle
 
 Comme outTurtleCycle, avec une visualisation carrée ou ronde en plus.
+
+METHOD:: joySpec
+
+Spécification d'une manette de jeu.
+
+ARGUMENT:: ... specs
+
+Chaque argument correspond à un contrôle, spécifié par [type, [slot, id]] ou [type, [[slot1, id1], [slot2, id2]]].
+
+Le type est un Symbol:
+
+- 'axisp' pour un levier dans le sens positif
+
+- 'axisn' pour un levier dans le sens négatif
+
+- 'diff' pour la différence entre 2 boutons
+
+- 'counter' pour un compteur à 5 crans sur deux boutons
+
+Pour les leviers, [slot, id] donne l'indice du contrôle dans le périphérique.
+Pour les paires de boutons, [slot1, id1] donne le bouton positif et [slot2, id2] le bouton négatif.
 
 INSTANCEMETHODS::
 
