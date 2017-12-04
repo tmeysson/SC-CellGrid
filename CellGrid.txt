@@ -1,0 +1,7 @@
+CellGrid -- Présentation
+
+CellGrid est un univers acoustique virtuel qui restitue l'ambiance d'un labyrinthe post-moderne en trois dimensions.
+Peuplé d'oscillateurs reliés par un tissu de boucles d'interaction énergético-spectro-temporelle, il produit un système chaotique, semblable à une société, dans lequel des éléments de même nature développent des comportements singuliers.
+CellGrid propose des fonctionnalités d'écoute active, grâce auxquelles le spectateur/artiste peut se déplacer et s'orienter à son gré au sein de la structure.
+Le rendu s'effectue au moyen d'un ensemble de haut-parleurs disposés de façon à restituer pleinement la spatialité de l'œuvre.
+
