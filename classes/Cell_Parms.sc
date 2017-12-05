@@ -99,6 +99,23 @@ Cell_Parms : Array {
 		);
 	}
 
+	*outVBAP{|linSpeed = 1, zAngSpeed = 0.5, yAngSpeed = 0.25, xAngSpeed = 0.125, speakerArray|
+		^super.with('vbap', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], nil,
+			switch (speakerArray.class)
+			{VBAPSpeakerArray} {speakerArray}
+			{Array} {VBAPSpeakerArray(*speakerArray)}
+		);
+	}
+
+	*outVBAPJoy{|linSpeed = 1, zAngSpeed = 0.5, yAngSpeed = 0.25, xAngSpeed = 0.125,
+		joyspec, speakerArray|
+		^super.with('vbap', [linSpeed, [zAngSpeed, yAngSpeed, xAngSpeed]], joyspec,
+			switch (speakerArray.class)
+			{VBAPSpeakerArray} {speakerArray}
+			{Array} {VBAPSpeakerArray(*speakerArray)}
+		);
+	}
+
 	*joySpec{|... specs|
 		^super.with(specs);
 	}

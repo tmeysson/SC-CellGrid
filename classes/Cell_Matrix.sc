@@ -123,7 +123,11 @@ Cell_Matrix {
 				},
 				'ambi', { numOutChannels = Cell_AmbiOut.addDefs(
 					*outParms[2..]
+				)},
+				'vbap', { numOutChannels = Cell_VBAPOut.addDefs(
+					*outParms[2..]
 				)}
+
 			);
 
 			// ajouter le fade in/out global
@@ -141,12 +145,12 @@ Cell_Matrix {
 			if((Server.default.options.numAudioBusChannels < 2048) ||
 				(Server.default.options.memSize < (128 * 1024)) ||
 				(Server.default.options.maxNodes < 2048) ||
-				(useNova && (Server.program == "exec scsynth")) ||
+				(useNova != (Server.program == "exec supernova")) ||
 				(Server.default.options.numOutputBusChannels < numOutChannels)) {
 				Server.default.quit;
 				// !! Ne fonctionne pas avec HOAEncoder !!
 				// utiliser useNova = false
-				if (useNova) {Server.supernova};
+				if (useNova) {Server.supernova} {Server.scsynth};
 				Server.default.options.numOutputBusChannels = numOutChannels;
 				Server.default.options.maxNodes = 2048;
 				Server.default.options.numAudioBusChannels = 2048;
@@ -200,7 +204,8 @@ Cell_Matrix {
 					outParms[1], outParms[2], outParms[3])},
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
-				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume, *outParms[1..])}
+				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume, *outParms[1..])},
+				'vbap', { out = Cell_VBAPOut(gateBus, busses, volume, *outParms[1..])}
 			);
 
 			// créer un groupe parallèle pour les cellules

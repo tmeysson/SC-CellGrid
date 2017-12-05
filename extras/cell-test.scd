@@ -209,6 +209,15 @@ a = Cell_Matrix([5,5,5], 0.1, 4, Cell_Parms.outAmbi(1, 0.25, 0.125, 0.0625, 'foa
 // arrête la simulation
 a.free;
 
+// sortie VBAP
+(
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outVBAP(1, 0.25, 0.125, 0.0625,
+	VBAPSpeakerArray(3, [[180, 60, -60],[-45,45]].allTuples)), useNova: false);
+)
+
+// arrête la simulation
+a.free;
+
 // Contrôle par joystick
 (
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
