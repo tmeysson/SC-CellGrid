@@ -212,7 +212,8 @@ a.free;
 // sortie VBAP
 (
 a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outVBAP(1, 0.25, 0.125, 0.0625,
-	VBAPSpeakerArray(3, [[180, 60, -60],[-45,45]].allTuples)), useNova: false);
+	// VBAPSpeakerArray(3, [[180, 60, -60],[-45,45]].allTuples)), useNova: false);
+	VBAPSpeakerArray(3, [[180, 60, -60],-30!3].flop ++ [0,90].allTuples)), useNova: true);
 )
 
 // arrête la simulation

@@ -4,7 +4,7 @@ Cell_VBAPOut {
 
 	var buffer;
 
-	var sources;
+	var sources, outGroup;
 	var posBus, rotBus, zoomBus, posGen;
 	var joystick;
 
@@ -112,12 +112,13 @@ Cell_VBAPOut {
 		zoomBus = Bus.control(numChannels: 1).setSynchronous(1);
 
 		// créer les sources (pour chaque Bus de sortie)
+		outGroup = ParGroup();
 		sources = busses.collect {|row, x|
 			row.collect {|col, y|
 				col.collect {|item, z|
 					Synth('cellVBAPOut', [in: item, out: outBus, vol: volume, pos: posBus, rot: rotBus,
 						zoom: zoomBus, size: [sizeX, sizeY, sizeZ], ind: [x,y,z],
-						bufnum: buffer.bufnum, spread: spread]);
+						bufnum: buffer.bufnum, spread: spread], outGroup);
 				}
 			}
 		};
