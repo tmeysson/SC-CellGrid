@@ -69,13 +69,14 @@ Cell_Matrix {
 	*/
 	*new {|size = 2, volume = 0, renewalTime = 4,
 		outParms = #['sum'], genParms, pipeParms, modParms,
-		rec, stopAfter, useNova = true|
+		rec, stopAfter, useNova = true, initWait = 0|
 		^super.new.init(size, volume, renewalTime,
 			outParms, genParms, pipeParms, modParms,
-			rec, stopAfter, useNova);
+			rec, stopAfter, useNova, initWait);
 	}
 
-	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms, rec, stopAfter, useNova|
+	init {|size, volume, renewalTime, outParms, genParms, pipeParms, modParms,
+		rec, stopAfter, useNova, initWait|
 		// nombre de sorties, suivant les sorties système
 		// ou bien le nombre spécifié (pour les installations type dôme)
 		var numOutChannels =
@@ -165,6 +166,11 @@ Cell_Matrix {
 			// démarrer le serveur et attendre la synchro
 			Server.default.bootSync;
 
+			// // attendre la synchronisation
+			// "Waiting %s...".format(initWait).postln;
+			// initWait.wait;
+			// "Resuming.".postln;
+
 			// attendre la synchro après ajout des définitions
 			// Server.default.sync;
 
@@ -210,9 +216,21 @@ Cell_Matrix {
 
 			// créer un groupe parallèle pour les cellules
 			cellParGroup = ParGroup();
+
+			// // attendre la synchronisation
+			// "Waiting %s...".format(initWait).postln;
+			// initWait.wait;
+			// "Resuming.".postln;
+
 			// créer les cellules (générateurs, chaînes d'effets et modulateurs)
 			cells = Array.fillND(gridSize, {|... indexes|
 				this.newCell(indexes);
+
+				// attendre la synchronisation
+				// "Waiting %s...".format(initWait).postln;
+				initWait.wait;
+				// "Resuming.".postln;
+
 			});
 
 			renew = Routine({
