@@ -57,7 +57,7 @@ Cell_VBAPOut {
 				var x,y,z,d,rp;
 				var gain;
 				var theta, phi;
-				var refresh = Impulse.kr(rate);
+				var refresh = Impulse.kr(rate, Rand());
 				var zm = In.kr(zoom);
 				// calcul de la position relative
 				rp = (ind - In.kr(pos, 3)).collect {|e,i| var s = size[i]/2; e.wrap2(s)};
