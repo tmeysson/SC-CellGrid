@@ -126,7 +126,7 @@ Cell_Matrix {
 					*outParms[2..]
 				)},
 				'vbap', { numOutChannels = Cell_VBAPOut.addDefs(
-					*outParms[2..]
+					*outParms[3..]
 				)}
 
 			);
