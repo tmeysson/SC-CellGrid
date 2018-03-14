@@ -51,13 +51,10 @@ Cell_VBAPOut {
 
 			// sortie VBAP (1 par cellule)
 			SynthDef('cellVBAPOut', {
-				|in, out, vol, pos, rot, zoom, size  = #[1,1,1], ind = #[0,0,0],
-				bufnum, rate = 50
-				/*, spread */|
+				|in, out, vol, pos, rot, zoom, size  = #[1,1,1], ind = #[0,0,0], bufnum|
 				var x,y,z,d,rp;
 				var gain;
 				var theta, phi;
-				var refresh = Impulse.kr(rate, Rand());
 				var zm = In.kr(zoom);
 				// calcul de la position relative
 				rp = (ind - In.kr(pos, 3)).collect {|e,i| var s = size[i]/2; e.wrap2(s)};
@@ -74,9 +71,7 @@ Cell_VBAPOut {
 					(180 / 1pi)).wrap2(180);
 				// création d'une source VBAP
 				Out.ar(out, VBAP.ar(numOutChannels, In.ar(in) * gain * vol,
-					bufnum, Latch.kr(theta, refresh), Latch.kr(phi, refresh), /*spread * d*/ 0));
-				// Out.ar(out, VBAP.ar(numOutChannels, In.ar(in) * gain * vol,
-				// bufnum, theta, phi, /*spread * d*/ 0));
+				bufnum, theta, phi, 0));
 			}),
 		];
 
@@ -87,14 +82,12 @@ Cell_VBAPOut {
 		^numOutChannels;
 	}
 
-	*new {|gateBus, busses, volume, speed, rate, joyspec, speakerArray|
-		^super.new.vbapOutInit(gateBus, busses, volume, speed, rate, joyspec, speakerArray);
+	*new {|gateBus, busses, volume, speed, joyspec, speakerArray|
+		^super.new.vbapOutInit(gateBus, busses, volume, speed, joyspec, speakerArray);
 	}
 
-	vbapOutInit {|gateBus, busses, volume, speed, rate, joyspec, speakerArray|
+	vbapOutInit {|gateBus, busses, volume, speed, joyspec, speakerArray|
 		var numOutChannels = speakerArray.numSpeakers;
-		// A corriger suivant les tests
-		// var spread = 100 / numOutChannels;
 
 		var linspeed, angspeed;
 		// taille de la grille
@@ -124,7 +117,7 @@ Cell_VBAPOut {
 				col.collect {|item, z|
 					Synth('cellVBAPOut', [in: item, out: outBus, vol: volume, pos: posBus, rot: rotBus,
 						zoom: zoomBus, size: [sizeX, sizeY, sizeZ], ind: [x,y,z],
-						bufnum: buffer.bufnum, rate: rate /*, spread: spread */], outGroup);
+						bufnum: buffer.bufnum], outGroup);
 				}
 			}
 		};
