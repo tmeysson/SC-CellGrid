@@ -166,11 +166,6 @@ Cell_Matrix {
 			// démarrer le serveur et attendre la synchro
 			Server.default.bootSync;
 
-			// // attendre la synchronisation
-			// "Waiting %s...".format(initWait).postln;
-			// initWait.wait;
-			// "Resuming.".postln;
-
 			// attendre la synchro après ajout des définitions
 			// Server.default.sync;
 
@@ -217,20 +212,10 @@ Cell_Matrix {
 			// créer un groupe parallèle pour les cellules
 			cellParGroup = ParGroup();
 
-			// // attendre la synchronisation
-			// "Waiting %s...".format(initWait).postln;
-			// initWait.wait;
-			// "Resuming.".postln;
-
 			// créer les cellules (générateurs, chaînes d'effets et modulateurs)
 			cells = Array.fillND(gridSize, {|... indexes|
-				this.newCell(indexes);
-
-				// attendre la synchronisation
-				// "Waiting %s...".format(initWait).postln;
 				initWait.wait;
-				// "Resuming.".postln;
-
+				this.newCell(indexes);
 			});
 
 			renew = Routine({
