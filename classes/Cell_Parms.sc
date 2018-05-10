@@ -119,4 +119,8 @@ Cell_Parms : Array {
 	*joySpec{|... specs|
 		^super.with(specs);
 	}
+
+	*outGrid{|grpSize = 1|
+		^super.with('grid', grpSize);
+	}
 }

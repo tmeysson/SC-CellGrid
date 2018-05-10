@@ -127,8 +127,12 @@ Cell_Matrix {
 				)},
 				'vbap', { numOutChannels = Cell_VBAPOut.addDefs(
 					*outParms[2..]
-				)}
-
+				)},
+				'grid', {
+					Cell_GridOut.addDefs();
+					numOutChannels = ((gridSize[0]/outParms[1]).ceil *
+						(gridSize[0]/outParms[1]).ceil).asInteger;
+				}
 			);
 
 			// ajouter le fade in/out global
@@ -142,7 +146,8 @@ Cell_Matrix {
 					In.ar(in, numOutChannels));
 			}).add;
 
-			// vérifier la nécessité d'augmenter les ressources (taille mémoire, nombre de Bus audio)
+			// vérifier la nécessité d'augmenter les ressources
+			// (taille mémoire, nombre de Bus audio)
 			if((Server.default.options.numAudioBusChannels < 2048) ||
 				(Server.default.options.memSize < (128 * 1024)) ||
 				(Server.default.options.maxNodes < 2048) ||
@@ -206,7 +211,8 @@ Cell_Matrix {
 				'circleview', { out = Cell_TurtleOut(gateBus, busses, volume,
 					outParms[1], outParms[2], outParms[3])},
 				'ambi', { out = Cell_AmbiOut(gateBus, busses, volume, *outParms[1..])},
-				'vbap', { out = Cell_VBAPOut(gateBus, busses, volume, *outParms[1..])}
+				'vbap', { out = Cell_VBAPOut(gateBus, busses, volume, *outParms[1..])},
+				'grid', { out = Cell_GridOut(gateBus, busses, volume, *outParms[1..])}
 			);
 
 			// créer un groupe parallèle pour les cellules

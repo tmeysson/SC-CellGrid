@@ -228,3 +228,9 @@ a = Cell_Matrix(4!3, 0.25, 4, Cell_Parms.outAmbiJoy(1, 0.25, 0.125, 0.0625,
 		['diff', [[1, 293],[1, 292]]], ['counter', [[1, 295], [1,294]]]],
 	'foa', 'stereo'));
 )
+
+// Sortie en grille (pour installation DNA)
+a = Cell_Matrix(8, 0.25, 4, Cell_Parms.outGrid(2), useNova: false ,initWait: 0.01);
+
+// arrête la simulation
+a.free;
