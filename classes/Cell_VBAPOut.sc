@@ -24,7 +24,8 @@ Cell_VBAPOut {
 				if (joyspec.isNil) {
 					# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
 					speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
-					zm = (LFNoise1.kr(1/60, 0.25, 0.25) * (size.reduce('min') - 2)) + 1;
+					zm = (LFNoise1.kr(1/60, 0.5, 0.25).clip(0, 0.5)
+						* (size.reduce('min') - 2)) + 1;
 				} {
 					# alpha, beta, gamma = ['zrot', 'yrot', 'xrot'].collect {|symb| In.kr(symb.ir)}
 					* angspeed * prd * 1pi;
