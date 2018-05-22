@@ -296,10 +296,7 @@ Cell_Matrix {
 		var inBusses = rec.(busses, indexes, gridSize);
 
 		// ordre aléatoire des directions
-		// pas du tout correct, ce qui nous intéresse est le nombre de dimensions
-		// var shuffle = (0..gridSize.size*2-1).scramble[..3];
-		// là, c'est mieux
-		var shuffle = (0..gridSize.maxDepth*2-1).scramble[..3];
+		var shuffle = (0..inBusses.size-1).scramble[..3];
 		// on appelle le générateur de cellules, avec l'adresse
 		// et les Bus d'entrée en ordre aléatoire
 		var cell = Cell_Group(cellParGroup, busses.atND(indexes),
