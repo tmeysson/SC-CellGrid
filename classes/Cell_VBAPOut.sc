@@ -140,6 +140,7 @@ Cell_VBAPOut {
 
 	free {
 		sources.flat.do(_.free);
+		outGroup.free;
 		posGen.free;
 		posBus.free; rotBus.free; zoomBus.free;
 		joystick.free;
