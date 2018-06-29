@@ -45,15 +45,19 @@ Cell_Joystick {
 	}
 
 	joystickInit {|joyspec|
-		{
-			// liste des périphériques
-			var list = LID.buildDeviceList.select {|e| e[1] != "could not open device"};
-			// TODO: trouver l'équivalent OSX
-			list.postln;
-			// ouvrir le premier
-			device = GeneralHID.open(list.first);
-		}.defer;
+		// {
+		// 	// liste des périphériques
+		// 	var list = LID.buildDeviceList.select {|e| e[1] != "could not open device"};
+		// 	// TODO: trouver l'équivalent OSX
+		// 	list.postln;
+		// 	// ouvrir le premier
+		// 	device = GeneralHID.open(list.first);
+		// }.defer;
 
+		{
+			LID.findAvailable;
+			device = LID.open(*joyspec[0]);
+		}.defer;
 		// attendre que le périphéique soit prêt
 		while {device.isNil} {"WAIT".postln; 0.1.wait};
 
@@ -63,7 +67,7 @@ Cell_Joystick {
 		outBusses = List();
 		synths = List();
 		// créer les Bus
-		busses = joyspec.collect {|spec|
+		busses = joyspec[1].collect {|spec|
 			var type, index;
 			# type, index = spec;
 			switch (type)

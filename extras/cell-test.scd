@@ -217,6 +217,27 @@ a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outVBAP(1, 0.25, 0.125, 0.0625,
 useNova: false, initWait: 0.01);
 )
 
+// idem avec joystick
+// trouver les indices des slots pertinents
+LID.findAvailable;
+LID.postAvailable;
+d = LID.open(121,6); // remplacer par le VendorID et le ProductID
+d.postSlots;
+// liste assez indigeste, les valeurs recherchées sont les deux indices
+// de chacun des contrôles qui nous intéressent
+d.close; // refermer la device, sinon CellGrid ne pourra pas l'ouvrir
+// peut-être redémarrer l'interpréteur ?
+(
+a = Cell_Matrix(4!3, 0.1, 4, Cell_Parms.outVBAPJoy(1, 0.25, 0.125, 0.0625,
+	// les arguments sont: le couple [VendorId, ProductId] suivi
+	// des différents contrôles [type, [index1, index2]]
+	// dans l'ordre: vitesse, rotation z, rotation y, rotation x et zoom
+	// voir Cell_Parms.joySpec dans la documentation
+	[[121,6], [['axisn', [3,5]], ['axisn', [3,0]], ['axisp', [3,1]],
+		['diff', [[1, 293],[1, 292]]], ['counter', [[1, 295], [1,294]]]]],
+	VBAPSpeakerArray(3, [[180, 60, -60],-30!3].flop ++ [[0,90]])),
+useNova: false, initWait: 0.01);
+)
 // arrête la simulation
 a.free;
 
