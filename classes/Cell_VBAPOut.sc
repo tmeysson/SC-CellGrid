@@ -24,8 +24,7 @@ Cell_VBAPOut {
 				if (joyspec.isNil) {
 					# alpha, beta, gamma = ({LFNoise1.kr(1)} ! 3) * angspeed * prd * 1pi;
 					speed = LFNoise1.kr(1, 0.5, 0.5) * linspeed * prd;
-					zm = (LFNoise1.kr(1/60, 0.5, 0.25).clip(0, 0.5)
-						* (size.reduce('min') - 2)) + 1;
+					zm = (LFNoise1.kr(1/60, 0.25, 0.25) * (size.reduce('min') - 2)) + 1;
 				} {
 					# alpha, beta, gamma = ['zrot', 'yrot', 'xrot'].collect {|symb| In.kr(symb.ir)}
 					* angspeed * prd * 1pi;
@@ -62,7 +61,7 @@ Cell_VBAPOut {
 				// coordonnées relatives
 				# x, y, z = ((rp!3) * In.kr(rot, 9).reshape(3,3)).collect(_.sum);
 				// calcul du gain
-				d = [x,y,z].squared.sum.sqrt.max(1e-32);
+				d = [x,y,z].squared.sum.sqrt.max(1e-12);
 				gain = max(0, (zm - d)) / (zm ** 2);
 				// normalisation
 				# x, y, z = [x,y,z] / d;
@@ -134,7 +133,7 @@ Cell_VBAPOut {
 			posGen = Synth('vbap-posGen', [pos: posBus, rot: rotBus, zoom: zoomBus,
 				size: [sizeX, sizeY, sizeZ], linspeed: linspeed, angspeed: angspeed,
 				spd: joyBusses[0], zrot: joyBusses[1], yrot: joyBusses[2],
-			xrot: joyBusses[3], zoomin: joyBusses[4]]);
+				xrot: joyBusses[3], zoomin: joyBusses[4]]);
 		};
 	}
 
