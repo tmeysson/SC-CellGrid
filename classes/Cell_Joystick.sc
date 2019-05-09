@@ -8,10 +8,14 @@ Cell_Joystick {
 	*addDefs {
 		defs = [
 			SynthDef('joystick_axispos', {|out, in|
-				Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01))
+				// Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01))
+				// DEBUG
+				Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01).poll(0.1))
 			}),
 			SynthDef('joystick_axisneg', {|out, in|
-				Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01))
+				// Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01))
+				// DEBUG
+				Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01).poll(0.1))
 			}),
 			SynthDef('joystick_diff', {|out, pos, neg|
 				Out.kr(out, In.kr(pos) - In.kr(neg))
@@ -61,35 +65,50 @@ Cell_Joystick {
 		// attendre que le périphéique soit prêt
 		while {device.isNil} {"WAIT".postln; 0.1.wait};
 
+		// DEBUG
+		"Device: %".format(device).postln;
+
 		// sauvegarder la specification
 		// specification = joyspec;
 		slots = List();
 		outBusses = List();
 		synths = List();
 		// créer les Bus
-		busses = joyspec[1].collect {|spec|
+		// DEBUG
+		busses = joyspec[1].collect {|spec, i|
+		// busses = joyspec[1].collect {|spec|
 			var type, index;
 			# type, index = spec;
+			// DEBUG
+			"%: type %, index %".format(i, type, index).postln;
 			switch (type)
 			{'axisp'} {
-				var slot = device.slots[index[0]][index[1]];
+				// DEBUG
+				var slot = device.slots[index[0]][index[1]].postln;
+				// var slot = device.slots[index[0]][index[1]];
 				var out, synth;
 				slots.add(slot);
 				slot.createBus;
 				out = Bus.control;
 				outBusses.add(out);
-				synth = Synth('joystick_axispos', [out: out, in: slot.bus]);
+				// DEBUG
+				synth = Synth('joystick_axispos', [out: out, in: slot.bus]).postln;
+				// synth = Synth('joystick_axispos', [out: out, in: slot.bus]);
 				synths.add(synth);
 				out;
 			}
 			{'axisn'} {
-				var slot = device.slots[index[0]][index[1]];
+				// DEBUG
+				var slot = device.slots[index[0]][index[1]].postln;
+				// var slot = device.slots[index[0]][index[1]];
 				var out, synth;
 				slots.add(slot);
 				slot.createBus;
 				out = Bus.control;
 				outBusses.add(out);
-				synth = Synth('joystick_axisneg', [out: out, in: slot.bus]);
+				// DEBUG
+				synth = Synth('joystick_axisneg', [out: out, in: slot.bus]).postln;
+				// synth = Synth('joystick_axisneg', [out: out, in: slot.bus]);
 				synths.add(synth);
 				out;
 			}
