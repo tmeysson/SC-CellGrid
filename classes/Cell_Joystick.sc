@@ -9,13 +9,35 @@ Cell_Joystick {
 		defs = [
 			SynthDef('joystick_axispos', {|out, in|
 				// Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01))
+
+				// var inval = In.kr(in);
+				// Out.kr(out,
+				// 	(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5
+				// .round(0.01));
+
 				// DEBUG
-				Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01).poll(0.1))
+				// Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01).poll(0.1))
+
+				var inval = In.kr(in);
+				Out.kr(out,
+					(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5
+					.round(0.01).poll(0.5));
 			}),
 			SynthDef('joystick_axisneg', {|out, in|
 				// Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01))
+
+				// var inval = In.kr(in);
+				// Out.kr(out,
+				// 	(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5
+				// .round(0.01));
+
 				// DEBUG
-				Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01).poll(0.1))
+				// Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01).poll(0.1))
+
+				var inval = In.kr(in);
+				Out.kr(out,
+					(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5
+					.round(0.01).poll(0.5));
 			}),
 			SynthDef('joystick_diff', {|out, pos, neg|
 				Out.kr(out, In.kr(pos) - In.kr(neg))
@@ -83,32 +105,26 @@ Cell_Joystick {
 			"%: type %, index %".format(i, type, index).postln;
 			switch (type)
 			{'axisp'} {
-				// DEBUG
-				var slot = device.slots[index[0]][index[1]].postln;
-				// var slot = device.slots[index[0]][index[1]];
+				var slot = device.slots[index[0]][index[1]];
 				var out, synth;
 				slots.add(slot);
 				slot.createBus;
+				slot.bus.set(0.5);
 				out = Bus.control;
 				outBusses.add(out);
-				// DEBUG
-				synth = Synth('joystick_axispos', [out: out, in: slot.bus]).postln;
-				// synth = Synth('joystick_axispos', [out: out, in: slot.bus]);
+				synth = Synth('joystick_axispos', [out: out, in: slot.bus]);
 				synths.add(synth);
 				out;
 			}
 			{'axisn'} {
-				// DEBUG
-				var slot = device.slots[index[0]][index[1]].postln;
-				// var slot = device.slots[index[0]][index[1]];
+				var slot = device.slots[index[0]][index[1]];
 				var out, synth;
 				slots.add(slot);
 				slot.createBus;
+				slot.bus.set(0.5);
 				out = Bus.control;
 				outBusses.add(out);
-				// DEBUG
-				synth = Synth('joystick_axisneg', [out: out, in: slot.bus]).postln;
-				// synth = Synth('joystick_axisneg', [out: out, in: slot.bus]);
+				synth = Synth('joystick_axisneg', [out: out, in: slot.bus]);
 				synths.add(synth);
 				out;
 			}
