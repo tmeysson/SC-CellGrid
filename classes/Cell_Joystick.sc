@@ -10,34 +10,34 @@ Cell_Joystick {
 			SynthDef('joystick_axispos', {|out, in|
 				// Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01))
 
-				// var inval = In.kr(in);
-				// Out.kr(out,
-				// 	(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5
-				// .round(0.01));
+				var inval = In.kr(in);
+				Out.kr(out,
+					((inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5)
+					.round(0.01));
 
 				// DEBUG
 				// Out.kr(out, MulAdd(In.kr(in), 2, -1).round(0.01).poll(0.1))
 
-				var inval = In.kr(in);
-				Out.kr(out,
-					(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5
-					.round(0.01).poll(0.5));
+				// var inval = In.kr(in);
+				// Out.kr(out,
+				// 	((inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * 2.5)
+				// .round(0.01).poll(0.5));
 			}),
 			SynthDef('joystick_axisneg', {|out, in|
 				// Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01))
 
-				// var inval = In.kr(in);
-				// Out.kr(out,
-				// 	(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5
-				// .round(0.01));
+				var inval = In.kr(in);
+				Out.kr(out,
+					((inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5)
+					.round(0.01));
 
 				// DEBUG
 				// Out.kr(out, MulAdd(In.kr(in), -2, 1).round(0.01).poll(0.1))
 
-				var inval = In.kr(in);
-				Out.kr(out,
-					(inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5
-					.round(0.01).poll(0.5));
+				// var inval = In.kr(in);
+				// Out.kr(out,
+				// 	((inval.clip(0,0.4) + inval.clip(0.6,1) - 1) * -2.5)
+				// .round(0.01).poll(0.5));
 			}),
 			SynthDef('joystick_diff', {|out, pos, neg|
 				Out.kr(out, In.kr(pos) - In.kr(neg))

@@ -217,20 +217,23 @@ useNova: false, initWait: 0.01);
 // trouver les indices des slots pertinents
 LID.findAvailable;
 LID.postAvailable;
-d = LID.open(121,6); // remplacer par le VendorID et le ProductID
+// d = LID.open(121,6); // remplacer par le VendorID et le ProductID
+d = LID.open(1133,49693); // remplacer par le VendorID et le ProductID
 d.postSlots;
 // liste assez indigeste, les valeurs recherchées sont les deux indices
 // de chacun des contrôles qui nous intéressent
 d.close; // refermer la device, sinon CellGrid ne pourra pas l'ouvrir
 // peut-être redémarrer l'interpréteur ?
 (
-a = Cell_Matrix(4!3, 0.25, 4, Cell_Parms.outAmbiJoy(1, 0.25, 0.125, 0.0625,
+a = Cell_Matrix(4!3, 1.0, 4, Cell_Parms.outAmbiJoy(1, 0.5, 0.25, 0.125,
 	// les arguments sont: le couple [VendorId, ProductId] suivi
 	// des différents contrôles [type, [index1, index2]]
 	// dans l'ordre: vitesse, rotation z, rotation y, rotation x et zoom
 	// voir Cell_Parms.joySpec dans la documentation
-	[[121,6], [['axisn', [3,5]], ['axisn', [3,0]], ['axisp', [3,1]],
-		['diff', [[1, 293],[1, 292]]], ['counter', [[1, 295], [1,294]]]]],
+	// [[121,6], [['axisn', [3,5]], ['axisn', [3,0]], ['axisp', [3,1]],
+	// ['diff', [[1,293],[1,292]]], ['counter', [[1,295], [1,294]]]]],
+	[[1133,49693], [['axisn', [3,4]], ['axisn', [3,0]], ['axisn', [3,1]], ['axisp', [3,3]],
+		['counter', [[1,311], [1,310]]]]],
 	'foa', ['binaural', 21]),
 useNova: false, initWait: 0.01);
 )
